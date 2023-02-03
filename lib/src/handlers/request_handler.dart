@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'models/request.dart';
+import '../models/request.dart';
 
 /// [RS] - response.
 abstract class RequestHandler<RQ extends Request, RS> {

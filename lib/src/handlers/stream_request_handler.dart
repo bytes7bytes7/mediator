@@ -1,4 +1,4 @@
-import 'models/request.dart';
+import '../models/request.dart';
 
 /// [RS] - response.
 abstract class StreamRequestHandler<RQ extends Request, RS> {
