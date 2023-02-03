@@ -3,7 +3,7 @@ import 'models/request.dart';
 abstract class Sender {
   const Sender();
 
-  Future<R> send<R>(Request<R> request);
+  Future<RS> send<RS>(Request<RS> request);
 
-  Stream<R> createStream<R>(Request<R> request);
+  Stream<RS> createStream<RS>(Request<RS> request);
 }

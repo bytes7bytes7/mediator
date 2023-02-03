@@ -1,4 +1,4 @@
-/// [R] - type of response.
-abstract class Request<R> {
+/// [RS] - type of response.
+abstract class Request<RS> {
   const Request();
 }
