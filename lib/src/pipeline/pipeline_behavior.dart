@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'models/request.dart';
+import '../models/request.dart';
 
 typedef PipelineDelegate<RS> = FutureOr<RS> Function();
 

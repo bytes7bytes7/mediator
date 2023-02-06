@@ -1,4 +1,4 @@
-import 'models/models.dart';
+import '../models/models.dart';
 
 typedef StreamPipelineDelegate<RS> = Stream<RS> Function();
 
