@@ -2,7 +2,7 @@ import 'dart:async';
 
 import '../models/request.dart';
 
-typedef PipelineDelegate<RS> = FutureOr<RS> Function();
+typedef RequestHandlerDelegate<RS> = FutureOr<RS> Function();
 
 /// [RS] - response.
 abstract class PipelineBehavior<RQ extends Request, RS> {
@@ -10,6 +10,6 @@ abstract class PipelineBehavior<RQ extends Request, RS> {
 
   FutureOr<RS> handle(
     RQ request,
-    PipelineDelegate<RS> next,
+    RequestHandlerDelegate<RS> next,
   );
 }

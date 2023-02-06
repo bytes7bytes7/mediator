@@ -10,7 +10,7 @@ class RequestExceptionProcessorBehavior<RQ extends Request, RS>
   final List<RequestExceptionHandler<RQ, RS, Exception>> _handlers;
 
   @override
-  FutureOr<RS> handle(RQ request, PipelineDelegate<RS> next) async {
+  FutureOr<RS> handle(RQ request, RequestHandlerDelegate<RS> next) async {
     try {
       return await next();
     } catch (e) {

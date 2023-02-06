@@ -2,16 +2,27 @@ part of 'mediator.dart';
 
 class _Mediator implements Mediator {
   final _requestHandlerCreators = HashMap<Type, RequestHandlerCreator>();
-  final _notificationHandlerCreators =
-      HashMap<Type, NotificationHandlerCreator>();
   final _streamRequestHandlerCreators =
       HashMap<Type, StreamRequestHandlerCreator>();
+  final _notificationHandlerCreators =
+      HashMap<Type, NotificationHandlerCreator>();
+  final _pipelineBehaviorCreators =
+      HashMap<Type, List<PipelineBehaviorCreator>>();
+  final _streamPipelineBehaviorCreators =
+      HashMap<Type, List<StreamPipelineBehaviorCreator>>();
 
   @override
   void registerRequestHandler<RQ extends Request, RS>(
     RequestHandlerCreator<RQ, RS> creator,
   ) {
     _requestHandlerCreators[RQ] = creator;
+  }
+
+  @override
+  void registerStreamRequestHandler<RQ extends Request, RS>(
+    StreamRequestHandlerCreator<RQ, RS> creator,
+  ) {
+    _streamRequestHandlerCreators[RQ] = creator;
   }
 
   @override
@@ -22,10 +33,29 @@ class _Mediator implements Mediator {
   }
 
   @override
-  void registerStreamRequestHandler<RQ extends Request, RS>(
-    StreamRequestHandlerCreator<RQ, RS> creator,
+  void registerPipelineBehavior<RQ extends Request, RS>(
+    PipelineBehaviorCreator<RQ, RS> creator,
   ) {
-    _streamRequestHandlerCreators[RQ] = creator;
+    final creators = _pipelineBehaviorCreators[RQ];
+
+    if (creators == null) {
+      _pipelineBehaviorCreators[RQ] = [creator];
+    } else {
+      _pipelineBehaviorCreators[RQ] = creators..add(creator);
+    }
+  }
+
+  @override
+  void registerStreamPipelineBehavior<RQ extends Request, RS>(
+    StreamPipelineBehaviorCreator<RQ, RS> creator,
+  ) {
+    final creators = _streamPipelineBehaviorCreators[RQ];
+
+    if (creators == null) {
+      _streamPipelineBehaviorCreators[RQ] = [creator];
+    } else {
+      _streamPipelineBehaviorCreators[RQ] = creators..add(creator);
+    }
   }
 
   @override
@@ -38,7 +68,14 @@ class _Mediator implements Mediator {
 
     final handler = handlerCreator.call();
 
-    return handler.handle(request);
+    final behaviors = _pipelineBehaviorCreators[Request<RS>]
+            as List<PipelineBehaviorCreator<Request<RS>, RS>>? ??
+        [];
+
+    return behaviors.fold<RequestHandlerDelegate<RS>>(
+      () => handler.handle(request),
+      (prev, curr) => () => curr().handle(request, prev),
+    )();
   }
 
   @override
@@ -53,7 +90,14 @@ class _Mediator implements Mediator {
 
     final handler = handlerCreator.call();
 
-    return handler.handle(request);
+    final behaviors = _streamPipelineBehaviorCreators[Request<RS>]
+            as List<StreamPipelineBehaviorCreator<Request<RS>, RS>>? ??
+        [];
+
+    return behaviors.fold<StreamHandlerDelegate<RS>>(
+      () => handler.handle(request),
+      (prev, curr) => () => curr().handle(request, () => _nextWrapper(prev())),
+    )();
   }
 
   @override
@@ -67,5 +111,11 @@ class _Mediator implements Mediator {
     final handler = handlerCreator.call();
 
     return handler.handle(notification);
+  }
+
+  Stream<T> _nextWrapper<T>(Stream<T> items) async* {
+    await for (final item in items) {
+      yield item;
+    }
   }
 }

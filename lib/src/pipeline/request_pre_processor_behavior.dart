@@ -11,7 +11,7 @@ class RequestPreProcessorBehavior<RQ extends Request, RS>
   final List<RequestPreProcessor<RQ>> _preProcessors;
 
   @override
-  FutureOr<RS> handle(RQ request, PipelineDelegate<RS> next) async {
+  FutureOr<RS> handle(RQ request, RequestHandlerDelegate<RS> next) async {
     for (final processor in _preProcessors) {
       await processor.process(request);
     }

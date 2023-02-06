@@ -11,7 +11,7 @@ class RequestPostProcessorBehavior<RQ extends Request, RS>
   final List<RequestPostProcessor<RQ, RS>> _postProcessors;
 
   @override
-  FutureOr<RS> handle(RQ request, PipelineDelegate<RS> next) async {
+  FutureOr<RS> handle(RQ request, RequestHandlerDelegate<RS> next) async {
     final response = await next();
 
     for (final processor in _postProcessors) {
