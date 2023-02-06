@@ -1,20 +1,29 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 
 import 'package:mediator/mediator.dart';
 
 class AuthResult {
-  const AuthResult(this.isLoggedIn);
+  const AuthResult(
+    this.isLoggedIn, {
+    this.error = '',
+  });
 
   final bool isLoggedIn;
+  final String error;
+
+  @override
+  String toString() => '$AuthResult {isLoggedIn: $isLoggedIn, error: $error}';
 }
 
 class LoginCommand extends Request<AuthResult> {
   const LoginCommand({
-    required this.login,
+    required this.name,
     required this.password,
   });
 
-  final String login;
+  final String name;
   final String password;
 }
 
@@ -23,7 +32,7 @@ class LoginCommandHandler extends RequestHandler<LoginCommand, AuthResult> {
 
   @override
   FutureOr<AuthResult> handle(LoginCommand request) {
-    if (request.login == 'admin' && request.password == 'admin') {
+    if (request.name == 'admin' && request.password == 'admin') {
       return const AuthResult(true);
     }
 
@@ -31,25 +40,105 @@ class LoginCommandHandler extends RequestHandler<LoginCommand, AuthResult> {
   }
 }
 
+class LoginNameValidationBehavior
+    extends PipelineBehavior<LoginCommand, AuthResult> {
+  const LoginNameValidationBehavior();
+
+  @override
+  FutureOr<AuthResult> handle(
+    LoginCommand request,
+    RequestHandlerDelegate<AuthResult> next,
+  ) {
+    if (request.name.isEmpty) {
+      return const AuthResult(
+        false,
+        error: 'Name cannot be empty',
+      );
+    }
+
+    return next();
+  }
+}
+
+class LoginPasswordValidationBehavior
+    extends PipelineBehavior<LoginCommand, AuthResult> {
+  const LoginPasswordValidationBehavior();
+
+  @override
+  FutureOr<AuthResult> handle(
+    LoginCommand request,
+    RequestHandlerDelegate<AuthResult> next,
+  ) {
+    if (request.password.isEmpty) {
+      return AuthResult(
+        false,
+        error: 'Password cannot be empty',
+      );
+    }
+
+    return next();
+  }
+}
+
+class Connecting extends RequestPreProcessor<LoginCommand> {
+  const Connecting();
+
+  @override
+  FutureOr<void> process(LoginCommand request) {
+    print('Connecting to server');
+  }
+}
+
+class PackingData extends RequestPreProcessor<LoginCommand> {
+  const PackingData();
+
+  @override
+  FutureOr<void> process(LoginCommand request) {
+    print('Packing data');
+  }
+}
+
 Future<void> main() async {
   final mediator = Mediator()
-    ..registerRequestHandler<AuthResult>(() => const LoginCommandHandler());
+    ..registerRequestHandler<AuthResult>(() => const LoginCommandHandler())
+    ..registerPipelineBehavior(() => const LoginNameValidationBehavior())
+    ..registerPipelineBehavior(() => const LoginPasswordValidationBehavior())
+    ..registerPipelineBehavior(
+      () => const RequestPreProcessorBehavior<LoginCommand, AuthResult>(
+        [
+          Connecting(),
+          PackingData(),
+        ],
+      ),
+    );
 
-  final authResult1 = await mediator.send(
-    const LoginCommand(
-      login: 'admin',
-      password: 'admin',
+  final credentials = [
+    MapEntry(
+      'admin',
+      'admin',
     ),
-  );
-
-  print('Authentication ${authResult1.isLoggedIn ? 'succeeded' : 'failed'}');
-
-  final authResult2 = await mediator.send(
-    const LoginCommand(
-      login: 'login',
-      password: 'password',
+    MapEntry(
+      'admin',
+      '1',
     ),
-  );
+    MapEntry(
+      '',
+      'admin',
+    ),
+    MapEntry(
+      'admin',
+      '',
+    ),
+  ];
 
-  print('Authentication ${authResult2.isLoggedIn ? 'succeeded' : 'failed'}');
+  for (final cred in credentials) {
+    final authResult = await mediator.send(
+      LoginCommand(
+        name: cred.key,
+        password: cred.value,
+      ),
+    );
+
+    print(authResult);
+  }
 }

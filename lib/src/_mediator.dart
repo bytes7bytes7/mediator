@@ -39,7 +39,8 @@ class _Mediator implements Mediator {
     final creators = _pipelineBehaviorCreators[Request<RS>];
 
     if (creators == null) {
-      _pipelineBehaviorCreators[Request<RS>] = [creator];
+      _pipelineBehaviorCreators[Request<RS>] =
+          <PipelineBehaviorCreator<Request<RS>, RS>>[creator];
     } else {
       _pipelineBehaviorCreators[Request<RS>] = creators..add(creator);
     }
@@ -52,7 +53,8 @@ class _Mediator implements Mediator {
     final creators = _streamPipelineBehaviorCreators[Request<RS>];
 
     if (creators == null) {
-      _streamPipelineBehaviorCreators[Request<RS>] = [creator];
+      _streamPipelineBehaviorCreators[Request<RS>] =
+          <StreamPipelineBehaviorCreator<Request<RS>, RS>>[creator];
     } else {
       _streamPipelineBehaviorCreators[Request<RS>] = creators..add(creator);
     }
