@@ -16,20 +16,20 @@ typedef StreamPipelineBehaviorCreator<RQ extends Request, RS>
 abstract class Sender {
   const Sender();
 
-  void registerRequestHandler<RQ extends Request, RS>(
-    RequestHandlerCreator<RQ, RS> creator,
+  void registerRequestHandler<RS>(
+    RequestHandlerCreator<Request<RS>, RS> creator,
   );
 
-  void registerStreamRequestHandler<RQ extends Request, RS>(
-    StreamRequestHandlerCreator<RQ, RS> creator,
+  void registerStreamRequestHandler<RS>(
+    StreamRequestHandlerCreator<Request<RS>, RS> creator,
   );
 
-  void registerPipelineBehavior<RQ extends Request, RS>(
-    PipelineBehaviorCreator<RQ, RS> creator,
+  void registerPipelineBehavior<RS>(
+    PipelineBehaviorCreator<Request<RS>, RS> creator,
   );
 
-  void registerStreamPipelineBehavior<RQ extends Request, RS>(
-    StreamPipelineBehaviorCreator<RQ, RS> creator,
+  void registerStreamPipelineBehavior<RS>(
+    StreamPipelineBehaviorCreator<Request<RS>, RS> creator,
   );
 
   Future<RS> send<RS>(Request<RS> request);

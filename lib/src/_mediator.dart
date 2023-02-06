@@ -12,17 +12,17 @@ class _Mediator implements Mediator {
       HashMap<Type, List<StreamPipelineBehaviorCreator>>();
 
   @override
-  void registerRequestHandler<RQ extends Request, RS>(
-    RequestHandlerCreator<RQ, RS> creator,
+  void registerRequestHandler<RS>(
+    RequestHandlerCreator<Request<RS>, RS> creator,
   ) {
-    _requestHandlerCreators[RQ] = creator;
+    _requestHandlerCreators[Request<RS>] = creator;
   }
 
   @override
-  void registerStreamRequestHandler<RQ extends Request, RS>(
-    StreamRequestHandlerCreator<RQ, RS> creator,
+  void registerStreamRequestHandler<RS>(
+    StreamRequestHandlerCreator<Request<RS>, RS> creator,
   ) {
-    _streamRequestHandlerCreators[RQ] = creator;
+    _streamRequestHandlerCreators[Request<RS>] = creator;
   }
 
   @override
@@ -33,28 +33,28 @@ class _Mediator implements Mediator {
   }
 
   @override
-  void registerPipelineBehavior<RQ extends Request, RS>(
-    PipelineBehaviorCreator<RQ, RS> creator,
+  void registerPipelineBehavior<RS>(
+    PipelineBehaviorCreator<Request<RS>, RS> creator,
   ) {
-    final creators = _pipelineBehaviorCreators[RQ];
+    final creators = _pipelineBehaviorCreators[Request<RS>];
 
     if (creators == null) {
-      _pipelineBehaviorCreators[RQ] = [creator];
+      _pipelineBehaviorCreators[Request<RS>] = [creator];
     } else {
-      _pipelineBehaviorCreators[RQ] = creators..add(creator);
+      _pipelineBehaviorCreators[Request<RS>] = creators..add(creator);
     }
   }
 
   @override
-  void registerStreamPipelineBehavior<RQ extends Request, RS>(
-    StreamPipelineBehaviorCreator<RQ, RS> creator,
+  void registerStreamPipelineBehavior<RS>(
+    StreamPipelineBehaviorCreator<Request<RS>, RS> creator,
   ) {
-    final creators = _streamPipelineBehaviorCreators[RQ];
+    final creators = _streamPipelineBehaviorCreators[Request<RS>];
 
     if (creators == null) {
-      _streamPipelineBehaviorCreators[RQ] = [creator];
+      _streamPipelineBehaviorCreators[Request<RS>] = [creator];
     } else {
-      _streamPipelineBehaviorCreators[RQ] = creators..add(creator);
+      _streamPipelineBehaviorCreators[Request<RS>] = creators..add(creator);
     }
   }
 
