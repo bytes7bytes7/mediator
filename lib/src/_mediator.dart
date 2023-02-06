@@ -1,41 +1,70 @@
 part of 'mediator.dart';
 
 class _Mediator implements Mediator {
-  final _requestHandlers = HashMap<Type, RequestHandler>();
-  final _notificationHandlers = HashMap<Type, NotificationHandler>();
-  final _streamRequestHandlers = HashMap<Type, StreamRequestHandler>();
+  final _requestHandlerCreators = HashMap<Type, RequestHandlerCreator>();
+  final _notificationHandlerCreators =
+      HashMap<Type, NotificationHandlerCreator>();
+  final _streamRequestHandlerCreators =
+      HashMap<Type, StreamRequestHandlerCreator>();
+
+  @override
+  void registerRequestHandler<RQ extends Request, RS>(
+    RequestHandlerCreator<RQ, RS> creator,
+  ) {
+    _requestHandlerCreators[RQ] = creator;
+  }
+
+  @override
+  void registerNotificationHandler<N extends Notification>(
+    NotificationHandlerCreator<N> creator,
+  ) {
+    _notificationHandlerCreators[N] = creator;
+  }
+
+  @override
+  void registerStreamRequestHandler<RQ extends Request, RS>(
+    StreamRequestHandlerCreator<RQ, RS> creator,
+  ) {
+    _streamRequestHandlerCreators[RQ] = creator;
+  }
 
   @override
   Future<RS> send<RS>(Request<RS> request) async {
-    final handler = _requestHandlers[Request<RS>];
+    final handlerCreator = _requestHandlerCreators[Request<RS>];
 
-    if (handler is! RequestHandler<Request<RS>, RS>) {
+    if (handlerCreator is! RequestHandlerCreator<Request<RS>, RS>) {
       throw Exception('Request handler for ${Request<RS>} is not registered');
     }
+
+    final handler = handlerCreator.call();
 
     return handler.handle(request);
   }
 
   @override
   Stream<RS> createStream<RS>(Request<RS> request) {
-    final handler = _streamRequestHandlers[Request<RS>];
+    final handlerCreator = _streamRequestHandlerCreators[Request<RS>];
 
-    if (handler is! StreamRequestHandler<Request<RS>, RS>) {
+    if (handlerCreator is! StreamRequestHandlerCreator<Request<RS>, RS>) {
       throw Exception(
         'Stream request handler for ${Request<RS>} is not registered',
       );
     }
+
+    final handler = handlerCreator.call();
 
     return handler.handle(request);
   }
 
   @override
   Future<void> publish<N extends Notification>(N notification) async {
-    final handler = _notificationHandlers[N];
+    final handlerCreator = _notificationHandlerCreators[N];
 
-    if (handler is! NotificationHandler<N>) {
+    if (handlerCreator is! NotificationHandlerCreator<N>) {
       throw Exception('Notification handler for $N is not registered');
     }
+
+    final handler = handlerCreator.call();
 
     return handler.handle(notification);
   }
