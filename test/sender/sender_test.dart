@@ -2,60 +2,36 @@ import 'package:mediator/mediator.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class AuthResult {
-  const AuthResult(
-    this.isLoggedIn, {
-    this.error = '',
-  });
-
-  final bool isLoggedIn;
-  final String error;
-
-  @override
-  String toString() => '$AuthResult {isLoggedIn: $isLoggedIn, error: $error}';
-}
-
-class LogInCommand extends Request<AuthResult> {
-  const LogInCommand({
-    required this.name,
-    required this.password,
-  });
-
-  final String name;
-  final String password;
-}
-
-class LogOutCommand extends Request<AuthResult> {}
-
-class GetMessagesCommand extends Request
-
-class MockLogInCommandHandler extends Mock
-    implements RequestHandler<LogInCommand, AuthResult> {}
-
-class MockLogOutCommandHandler extends Mock
-    implements RequestHandler<LogOutCommand, AuthResult> {}
-
-class MockGetMessagesCommandHandler extends Mock implements StreamRequestHandler<> {}
+import 'handlers/handlers.dart';
+import 'models/models.dart';
+import 'requests/requests.dart';
 
 void main() {
   late Sender sender;
+  late AuthResult authResult;
+  late Message message;
   late LogInCommand logInCommand;
   late LogOutCommand logOutCommand;
-  late AuthResult authResult;
+  late GetMessagesCommand getMessagesCommand;
   late RequestHandler<LogInCommand, AuthResult> logInHandler;
   late RequestHandler<LogOutCommand, AuthResult> logOutHandler;
+  late StreamRequestHandler<GetMessagesCommand, Message> getMessagesHandler;
 
   setUpAll(() {
     registerFallbackValue(LogInCommand(name: '', password: ''));
+    registerFallbackValue(Message('text'));
   });
 
   setUp(() {
     sender = Mediator();
+    authResult = AuthResult(false);
+    message = Message('text');
     logInCommand = LogInCommand(name: 'name', password: 'password');
     logOutCommand = LogOutCommand();
-    authResult = AuthResult(false);
+    getMessagesCommand = GetMessagesCommand();
     logInHandler = MockLogInCommandHandler();
     logOutHandler = MockLogOutCommandHandler();
+    getMessagesHandler = MockGetMessagesCommandHandler();
   });
 
   group(
@@ -80,11 +56,11 @@ void main() {
         'throws when no stream request handlers registered',
         () async {
           await expectLater(
-            () => sender.createStream(logInCommand),
+            () => sender.createStream(getMessagesCommand),
             throwsA(
               TypeMatcher<
                   StreamRequestHandlerNotRegistered<
-                      StreamRequestHandlerCreator<Request<AuthResult>,
+                      StreamRequestHandlerCreator<StreamRequest<AuthResult>,
                           AuthResult>>>(),
             ),
           );
@@ -112,11 +88,11 @@ void main() {
         'throws when proper stream request handlers is not registered',
         () async {
           await expectLater(
-            () => sender.createStream(logInCommand),
+            () => sender.createStream(getMessagesCommand),
             throwsA(
               TypeMatcher<
                   StreamRequestHandlerNotRegistered<
-                      StreamRequestHandlerCreator<Request<AuthResult>,
+                      StreamRequestHandlerCreator<StreamRequest<AuthResult>,
                           AuthResult>>>(),
             ),
           );
