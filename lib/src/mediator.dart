@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'exceptions/exceptions.dart';
 import 'models/models.dart';
 import 'pipeline/pipeline.dart';
 import 'publisher.dart';

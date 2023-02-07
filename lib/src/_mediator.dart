@@ -65,7 +65,8 @@ class _Mediator implements Mediator {
     final handlerCreator = _requestHandlerCreators[Request<RS>];
 
     if (handlerCreator is! RequestHandlerCreator<Request<RS>, RS>) {
-      throw Exception('Request handler for ${Request<RS>} is not registered');
+      throw RequestHandlerNotRegistered<
+          RequestHandlerCreator<Request<RS>, RS>>();
     }
 
     final handler = handlerCreator.call();
@@ -85,9 +86,8 @@ class _Mediator implements Mediator {
     final handlerCreator = _streamRequestHandlerCreators[Request<RS>];
 
     if (handlerCreator is! StreamRequestHandlerCreator<Request<RS>, RS>) {
-      throw Exception(
-        'Stream request handler for ${Request<RS>} is not registered',
-      );
+      throw StreamRequestHandlerNotRegistered<
+          StreamRequestHandlerCreator<Request<RS>, RS>>();
     }
 
     final handler = handlerCreator.call();
@@ -107,7 +107,7 @@ class _Mediator implements Mediator {
     final handlerCreator = _notificationHandlerCreators[N];
 
     if (handlerCreator is! NotificationHandlerCreator<N>) {
-      throw Exception('Notification handler for $N is not registered');
+      throw NotificationHandlerNotRegistered<NotificationHandlerCreator<N>>();
     }
 
     final handler = handlerCreator.call();

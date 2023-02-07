@@ -1,5 +1,6 @@
 library mediator;
 
+export 'src/exceptions/exceptions.dart';
 export 'src/handlers/handlers.dart';
 export 'src/mediator.dart';
 export 'src/models/models.dart';
