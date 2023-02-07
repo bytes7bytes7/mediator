@@ -15,8 +15,8 @@ class AuthResult {
   String toString() => '$AuthResult {isLoggedIn: $isLoggedIn, error: $error}';
 }
 
-class LoginCommand extends Request<AuthResult> {
-  const LoginCommand({
+class LogInCommand extends Request<AuthResult> {
+  const LogInCommand({
     required this.name,
     required this.password,
   });
@@ -25,24 +25,37 @@ class LoginCommand extends Request<AuthResult> {
   final String password;
 }
 
-class MockLoginCommandHandler extends Mock
-    implements RequestHandler<LoginCommand, AuthResult> {}
+class LogOutCommand extends Request<AuthResult> {}
+
+class GetMessagesCommand extends Request
+
+class MockLogInCommandHandler extends Mock
+    implements RequestHandler<LogInCommand, AuthResult> {}
+
+class MockLogOutCommandHandler extends Mock
+    implements RequestHandler<LogOutCommand, AuthResult> {}
+
+class MockGetMessagesCommandHandler extends Mock implements StreamRequestHandler<> {}
 
 void main() {
   late Sender sender;
-  late RequestHandler<LoginCommand, AuthResult> loginHandler;
-  late LoginCommand loginCommand;
+  late LogInCommand logInCommand;
+  late LogOutCommand logOutCommand;
   late AuthResult authResult;
+  late RequestHandler<LogInCommand, AuthResult> logInHandler;
+  late RequestHandler<LogOutCommand, AuthResult> logOutHandler;
 
   setUpAll(() {
-    registerFallbackValue(LoginCommand(name: '', password: ''));
+    registerFallbackValue(LogInCommand(name: '', password: ''));
   });
 
   setUp(() {
     sender = Mediator();
-    loginHandler = MockLoginCommandHandler();
-    loginCommand = LoginCommand(name: 'name', password: 'password');
+    logInCommand = LogInCommand(name: 'name', password: 'password');
+    logOutCommand = LogOutCommand();
     authResult = AuthResult(false);
+    logInHandler = MockLogInCommandHandler();
+    logOutHandler = MockLogOutCommandHandler();
   });
 
   group(
@@ -52,7 +65,7 @@ void main() {
         'throws when no request handlers registered',
         () async {
           await expectLater(
-            sender.send(loginCommand),
+            () => sender.send(logInCommand),
             throwsA(
               TypeMatcher<
                   RequestHandlerNotRegistered<
@@ -64,13 +77,60 @@ void main() {
       );
 
       test(
-        'does not throw when a proper request handler is registered',
+        'throws when no stream request handlers registered',
         () async {
-          when(() => loginHandler.handle(any())).thenReturn(authResult);
-          sender.registerRequestHandler(() => loginHandler);
+          await expectLater(
+            () => sender.createStream(logInCommand),
+            throwsA(
+              TypeMatcher<
+                  StreamRequestHandlerNotRegistered<
+                      StreamRequestHandlerCreator<Request<AuthResult>,
+                          AuthResult>>>(),
+            ),
+          );
+        },
+      );
+
+      test(
+        'throws when proper request handlers is not registered',
+        () async {
+          sender.registerRequestHandler(() => logOutHandler);
 
           await expectLater(
-            sender.send(loginCommand),
+            () => sender.send(logInCommand),
+            throwsA(
+              TypeMatcher<
+                  RequestHandlerNotRegistered<
+                      RequestHandlerCreator<Request<AuthResult>,
+                          AuthResult>>>(),
+            ),
+          );
+        },
+      );
+
+      test(
+        'throws when proper stream request handlers is not registered',
+        () async {
+          await expectLater(
+            () => sender.createStream(logInCommand),
+            throwsA(
+              TypeMatcher<
+                  StreamRequestHandlerNotRegistered<
+                      StreamRequestHandlerCreator<Request<AuthResult>,
+                          AuthResult>>>(),
+            ),
+          );
+        },
+      );
+
+      test(
+        'does not throw when a proper request handler is registered',
+        () async {
+          when(() => logInHandler.handle(any())).thenReturn(authResult);
+          sender.registerRequestHandler(() => logInHandler);
+
+          await expectLater(
+            sender.send(logInCommand),
             completion(authResult),
           );
         },

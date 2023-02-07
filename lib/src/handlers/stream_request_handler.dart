@@ -1,7 +1,7 @@
-import '../models/request.dart';
+import '../models/stream_request.dart';
 
 /// [RS] - response.
-abstract class StreamRequestHandler<RQ extends Request, RS> {
+abstract class StreamRequestHandler<RQ extends StreamRequest, RS> {
   const StreamRequestHandler();
 
   Stream<RS> handle(RQ request);

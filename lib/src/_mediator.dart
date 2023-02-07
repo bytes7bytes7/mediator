@@ -20,7 +20,7 @@ class _Mediator implements Mediator {
 
   @override
   void registerStreamRequestHandler<RS>(
-    StreamRequestHandlerCreator<Request<RS>, RS> creator,
+    StreamRequestHandlerCreator<StreamRequest<RS>, RS> creator,
   ) {
     _streamRequestHandlerCreators[Request<RS>] = creator;
   }
@@ -48,13 +48,13 @@ class _Mediator implements Mediator {
 
   @override
   void registerStreamPipelineBehavior<RS>(
-    StreamPipelineBehaviorCreator<Request<RS>, RS> creator,
+    StreamPipelineBehaviorCreator<StreamRequest<RS>, RS> creator,
   ) {
     final creators = _streamPipelineBehaviorCreators[Request<RS>];
 
     if (creators == null) {
       _streamPipelineBehaviorCreators[Request<RS>] =
-          <StreamPipelineBehaviorCreator<Request<RS>, RS>>[creator];
+          <StreamPipelineBehaviorCreator<StreamRequest<RS>, RS>>[creator];
     } else {
       _streamPipelineBehaviorCreators[Request<RS>] = creators..add(creator);
     }
@@ -82,18 +82,18 @@ class _Mediator implements Mediator {
   }
 
   @override
-  Stream<RS> createStream<RS>(Request<RS> request) {
+  Stream<RS> createStream<RS>(StreamRequest<RS> request) {
     final handlerCreator = _streamRequestHandlerCreators[Request<RS>];
 
-    if (handlerCreator is! StreamRequestHandlerCreator<Request<RS>, RS>) {
+    if (handlerCreator is! StreamRequestHandlerCreator<StreamRequest<RS>, RS>) {
       throw StreamRequestHandlerNotRegistered<
-          StreamRequestHandlerCreator<Request<RS>, RS>>();
+          StreamRequestHandlerCreator<StreamRequest<RS>, RS>>();
     }
 
     final handler = handlerCreator.call();
 
     final behaviors = _streamPipelineBehaviorCreators[Request<RS>]
-            as List<StreamPipelineBehaviorCreator<Request<RS>, RS>>? ??
+            as List<StreamPipelineBehaviorCreator<StreamRequest<RS>, RS>>? ??
         [];
 
     return behaviors.fold<StreamHandlerDelegate<RS>>(

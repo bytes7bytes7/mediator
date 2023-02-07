@@ -1,16 +1,14 @@
-import 'handlers/request_handler.dart';
-import 'handlers/stream_request_handler.dart';
-import 'models/request.dart';
-import 'pipeline/pipeline_behavior.dart';
-import 'pipeline/stream_pipeline_behavior.dart';
+import 'handlers/handlers.dart';
+import 'models/models.dart';
+import 'pipeline/pipeline.dart';
 
 typedef RequestHandlerCreator<RQ extends Request, RS> = RequestHandler<RQ, RS>
     Function();
-typedef StreamRequestHandlerCreator<RQ extends Request, RS>
+typedef StreamRequestHandlerCreator<RQ extends StreamRequest, RS>
     = StreamRequestHandler<RQ, RS> Function();
 typedef PipelineBehaviorCreator<RQ extends Request, RS>
     = PipelineBehavior<RQ, RS> Function();
-typedef StreamPipelineBehaviorCreator<RQ extends Request, RS>
+typedef StreamPipelineBehaviorCreator<RQ extends StreamRequest, RS>
     = StreamPipelineBehavior<RQ, RS> Function();
 
 abstract class Sender {
@@ -21,7 +19,7 @@ abstract class Sender {
   );
 
   void registerStreamRequestHandler<RS>(
-    StreamRequestHandlerCreator<Request<RS>, RS> creator,
+    StreamRequestHandlerCreator<StreamRequest<RS>, RS> creator,
   );
 
   void registerPipelineBehavior<RS>(
@@ -29,10 +27,10 @@ abstract class Sender {
   );
 
   void registerStreamPipelineBehavior<RS>(
-    StreamPipelineBehaviorCreator<Request<RS>, RS> creator,
+    StreamPipelineBehaviorCreator<StreamRequest<RS>, RS> creator,
   );
 
   Future<RS> send<RS>(Request<RS> request);
 
-  Stream<RS> createStream<RS>(Request<RS> request);
+  Stream<RS> createStream<RS>(StreamRequest<RS> request);
 }
