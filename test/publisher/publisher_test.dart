@@ -2,15 +2,13 @@ import 'package:mediator/mediator.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class PostLiked extends Notification {}
-
-class MockPostLikedHandler extends Mock
-    implements NotificationHandler<PostLiked> {}
+import 'handlers/handlers.dart';
+import 'notifications/notifications.dart';
 
 void main() {
   late Publisher publisher;
-  late NotificationHandler<PostLiked> postLikedHandler;
   late PostLiked postLiked;
+  late NotificationHandler<PostLiked> postLikedHandler;
 
   setUpAll(() {
     registerFallbackValue(PostLiked());
@@ -18,8 +16,8 @@ void main() {
 
   setUp(() {
     publisher = Mediator();
-    postLikedHandler = MockPostLikedHandler();
     postLiked = PostLiked();
+    postLikedHandler = MockPostLikedHandler();
   });
 
   group(
