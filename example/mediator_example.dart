@@ -100,7 +100,7 @@ class PackingData extends RequestPreProcessor<LoginCommand> {
 
 Future<void> main() async {
   final mediator = Mediator()
-    ..registerRequestHandler<AuthResult>(() => const LoginCommandHandler())
+    ..registerRequestHandler(() => const LoginCommandHandler())
     ..registerPipelineBehavior(() => const LoginNameValidationBehavior())
     ..registerPipelineBehavior(() => const LoginPasswordValidationBehavior())
     ..registerPipelineBehavior(
@@ -132,7 +132,7 @@ Future<void> main() async {
   ];
 
   for (final cred in credentials) {
-    final authResult = await mediator.send(
+    final authResult = await mediator.send<LoginCommand, AuthResult>(
       LoginCommand(
         name: cred.key,
         password: cred.value,
