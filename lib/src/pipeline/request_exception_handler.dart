@@ -5,7 +5,7 @@ import 'package:meta/meta.dart';
 import '../models/request.dart';
 import 'request_exception_handler_state.dart';
 
-abstract class RequestExceptionHandler<RQ extends Request, RS,
+abstract class RequestExceptionHandler<RQ extends Request<RS>, RS,
     E extends Exception> {
   const RequestExceptionHandler();
 

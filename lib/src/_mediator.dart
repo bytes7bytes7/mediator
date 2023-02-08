@@ -12,17 +12,17 @@ class _Mediator implements Mediator {
       HashMap<Type, List<StreamPipelineBehaviorCreator>>();
 
   @override
-  void registerRequestHandler<RS>(
-    RequestHandlerCreator<Request<RS>, RS> creator,
+  void registerRequestHandler<RQ extends Request<RS>, RS>(
+    RequestHandlerCreator<RQ, RS> creator,
   ) {
-    _requestHandlerCreators[Request<RS>] = creator;
+    _requestHandlerCreators[RQ] = creator;
   }
 
   @override
-  void registerStreamRequestHandler<RS>(
-    StreamRequestHandlerCreator<StreamRequest<RS>, RS> creator,
+  void registerStreamRequestHandler<RQ extends StreamRequest<RS>, RS>(
+    StreamRequestHandlerCreator<RQ, RS> creator,
   ) {
-    _streamRequestHandlerCreators[Request<RS>] = creator;
+    _streamRequestHandlerCreators[RQ] = creator;
   }
 
   @override
@@ -33,46 +33,47 @@ class _Mediator implements Mediator {
   }
 
   @override
-  void registerPipelineBehavior<RS>(
-    PipelineBehaviorCreator<Request<RS>, RS> creator,
+  void registerPipelineBehavior<RQ extends Request<RS>, RS>(
+    PipelineBehaviorCreator<RQ, RS> creator,
   ) {
-    final creators = _pipelineBehaviorCreators[Request<RS>];
+    final creators = _pipelineBehaviorCreators[RQ];
 
     if (creators == null) {
-      _pipelineBehaviorCreators[Request<RS>] =
-          <PipelineBehaviorCreator<Request<RS>, RS>>[creator];
+      _pipelineBehaviorCreators[RQ] = <PipelineBehaviorCreator<RQ, RS>>[
+        creator
+      ];
     } else {
-      _pipelineBehaviorCreators[Request<RS>] = creators..add(creator);
+      _pipelineBehaviorCreators[RQ] = creators..add(creator);
     }
   }
 
   @override
-  void registerStreamPipelineBehavior<RS>(
-    StreamPipelineBehaviorCreator<StreamRequest<RS>, RS> creator,
+  void registerStreamPipelineBehavior<RQ extends StreamRequest<RS>, RS>(
+    StreamPipelineBehaviorCreator<RQ, RS> creator,
   ) {
-    final creators = _streamPipelineBehaviorCreators[Request<RS>];
+    final creators = _streamPipelineBehaviorCreators[RQ];
 
     if (creators == null) {
-      _streamPipelineBehaviorCreators[Request<RS>] =
-          <StreamPipelineBehaviorCreator<StreamRequest<RS>, RS>>[creator];
+      _streamPipelineBehaviorCreators[RQ] =
+          <StreamPipelineBehaviorCreator<RQ, RS>>[creator];
     } else {
-      _streamPipelineBehaviorCreators[Request<RS>] = creators..add(creator);
+      _streamPipelineBehaviorCreators[RQ] = creators..add(creator);
     }
   }
 
   @override
-  Future<RS> send<RS>(Request<RS> request) async {
-    final handlerCreator = _requestHandlerCreators[Request<RS>];
+  Future<RS> send<RQ extends Request<RS>, RS>(RQ request) async {
+    final handlerCreator = _requestHandlerCreators[RQ];
 
-    if (handlerCreator is! RequestHandlerCreator<Request<RS>, RS>) {
-      throw RequestHandlerNotRegistered<
-          RequestHandlerCreator<Request<RS>, RS>>();
+    if (handlerCreator is! RequestHandlerCreator<RQ, RS>) {
+      throw RequestHandlerNotRegistered<RequestHandlerCreator<RQ, RS>, RQ,
+          RS>();
     }
 
     final handler = handlerCreator.call();
 
-    final behaviors = _pipelineBehaviorCreators[Request<RS>]
-            as List<PipelineBehaviorCreator<Request<RS>, RS>>? ??
+    final behaviors = _pipelineBehaviorCreators[RQ]
+            as List<PipelineBehaviorCreator<RQ, RS>>? ??
         [];
 
     return behaviors.fold<RequestHandlerDelegate<RS>>(
@@ -82,18 +83,18 @@ class _Mediator implements Mediator {
   }
 
   @override
-  Stream<RS> createStream<RS>(StreamRequest<RS> request) {
-    final handlerCreator = _streamRequestHandlerCreators[Request<RS>];
+  Stream<RS> createStream<RQ extends StreamRequest<RS>, RS>(RQ request) {
+    final handlerCreator = _streamRequestHandlerCreators[RQ];
 
-    if (handlerCreator is! StreamRequestHandlerCreator<StreamRequest<RS>, RS>) {
+    if (handlerCreator is! StreamRequestHandlerCreator<RQ, RS>) {
       throw StreamRequestHandlerNotRegistered<
-          StreamRequestHandlerCreator<StreamRequest<RS>, RS>>();
+          StreamRequestHandlerCreator<RQ, RS>, RQ, RS>();
     }
 
     final handler = handlerCreator.call();
 
-    final behaviors = _streamPipelineBehaviorCreators[Request<RS>]
-            as List<StreamPipelineBehaviorCreator<StreamRequest<RS>, RS>>? ??
+    final behaviors = _streamPipelineBehaviorCreators[RQ]
+            as List<StreamPipelineBehaviorCreator<RQ, RS>>? ??
         [];
 
     return behaviors.fold<StreamHandlerDelegate<RS>>(

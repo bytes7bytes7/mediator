@@ -4,7 +4,7 @@ import '../models/request.dart';
 import 'pipeline_behavior.dart';
 import 'request_exception_action.dart';
 
-class RequestExceptionActionProcessorBehavior<RQ extends Request, RS>
+class RequestExceptionActionProcessorBehavior<RQ extends Request<RS>, RS>
     implements PipelineBehavior<RQ, RS> {
   const RequestExceptionActionProcessorBehavior(this._actions);
 

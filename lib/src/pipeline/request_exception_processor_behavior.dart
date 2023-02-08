@@ -3,7 +3,7 @@ import 'dart:async';
 import '../models/request.dart';
 import 'pipeline.dart';
 
-class RequestExceptionProcessorBehavior<RQ extends Request, RS>
+class RequestExceptionProcessorBehavior<RQ extends Request<RS>, RS>
     implements PipelineBehavior<RQ, RS> {
   const RequestExceptionProcessorBehavior(this._handlers);
 
