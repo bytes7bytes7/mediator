@@ -12,17 +12,17 @@ class _Mediator implements Mediator {
       HashMap<Type, List<StreamPipelineBehaviorCreator>>();
 
   @override
-  void registerRequestHandler<RQ extends Request<RS>, RS>(
-    RequestHandlerCreator<RQ, RS> creator,
+  void registerRequestHandler(
+    RequestHandlerMeta meta,
   ) {
-    _requestHandlerCreators[RQ] = creator;
+    _requestHandlerCreators[meta.requestType] = meta.handlerCreator;
   }
 
   @override
-  void registerStreamRequestHandler<RQ extends StreamRequest<RS>, RS>(
-    StreamRequestHandlerCreator<RQ, RS> creator,
+  void registerStreamRequestHandler(
+    StreamRequestHandlerMeta meta,
   ) {
-    _streamRequestHandlerCreators[RQ] = creator;
+    _streamRequestHandlerCreators[meta.requestType] = meta.handlerCreator;
   }
 
   @override
@@ -33,82 +33,96 @@ class _Mediator implements Mediator {
   }
 
   @override
-  void registerPipelineBehavior<RQ extends Request<RS>, RS>(
-    PipelineBehaviorCreator<RQ, RS> creator,
+  void registerPipelineBehavior(
+    PipelineBehaviorMeta meta,
   ) {
-    final creators = _pipelineBehaviorCreators[RQ];
+    final creators = _pipelineBehaviorCreators[meta.requestType];
 
     if (creators == null) {
-      _pipelineBehaviorCreators[RQ] = <PipelineBehaviorCreator<RQ, RS>>[
-        creator
+      _pipelineBehaviorCreators[meta.requestType] = <PipelineBehaviorCreator>[
+        meta.behaviorCreator,
       ];
     } else {
-      _pipelineBehaviorCreators[RQ] = creators..add(creator);
+      _pipelineBehaviorCreators[meta.requestType] = creators
+        ..add(meta.behaviorCreator);
     }
   }
 
   @override
-  void registerStreamPipelineBehavior<RQ extends StreamRequest<RS>, RS>(
-    StreamPipelineBehaviorCreator<RQ, RS> creator,
+  void registerStreamPipelineBehavior(
+    StreamPipelineBehaviorMeta meta,
   ) {
-    final creators = _streamPipelineBehaviorCreators[RQ];
+    final creators = _streamPipelineBehaviorCreators[meta.requestType];
 
     if (creators == null) {
-      _streamPipelineBehaviorCreators[RQ] =
-          <StreamPipelineBehaviorCreator<RQ, RS>>[creator];
+      _streamPipelineBehaviorCreators[meta.requestType] =
+          <StreamPipelineBehaviorCreator>[meta.behaviorCreator];
     } else {
-      _streamPipelineBehaviorCreators[RQ] = creators..add(creator);
+      _streamPipelineBehaviorCreators[meta.requestType] = creators
+        ..add(meta.behaviorCreator);
     }
   }
 
   @override
-  Future<RS> send<RQ extends Request<RS>, RS>(RQ request) async {
-    final handlerCreator = _requestHandlerCreators[RQ];
+  Future<RS> send<RS, RQ extends Request<RS>>({
+    required RQ request,
+    required Type requestType,
+    required Type responseType,
+  }) async {
+    final handlerCreator = _requestHandlerCreators[requestType];
 
-    if (handlerCreator is! RequestHandlerCreator<RQ, RS>) {
-      throw RequestHandlerNotRegistered<RequestHandlerCreator<RQ, RS>, RQ,
-          RS>();
+    if (handlerCreator == null) {
+      throw RequestHandlerNotRegistered(
+        requestType: requestType,
+        responseType: responseType,
+      );
     }
 
     final handler = handlerCreator.call();
 
-    final behaviors = _pipelineBehaviorCreators[RQ]
-            as List<PipelineBehaviorCreator<RQ, RS>>? ??
-        [];
+    final behaviors = _pipelineBehaviorCreators[requestType] ?? [];
 
     return behaviors.fold<RequestHandlerDelegate<RS>>(
-      () => handler.handle(request),
-      (prev, curr) => () => curr().handle(request, prev),
+      () => handler.handle(request) as FutureOr<RS>,
+      (prev, curr) => () => curr().handle(request, prev) as FutureOr<RS>,
     )();
   }
 
   @override
-  Stream<RS> createStream<RQ extends StreamRequest<RS>, RS>(RQ request) {
-    final handlerCreator = _streamRequestHandlerCreators[RQ];
+  Stream<RS> createStream<RS, RQ extends StreamRequest<RS>>({
+    required RQ request,
+    required Type requestType,
+    required Type responseType,
+  }) {
+    final handlerCreator = _streamRequestHandlerCreators[requestType];
 
-    if (handlerCreator is! StreamRequestHandlerCreator<RQ, RS>) {
-      throw StreamRequestHandlerNotRegistered<
-          StreamRequestHandlerCreator<RQ, RS>, RQ, RS>();
+    if (handlerCreator == null) {
+      throw StreamRequestHandlerNotRegistered(
+        requestType: requestType,
+        responseType: responseType,
+      );
     }
 
     final handler = handlerCreator.call();
 
-    final behaviors = _streamPipelineBehaviorCreators[RQ]
-            as List<StreamPipelineBehaviorCreator<RQ, RS>>? ??
-        [];
+    final behaviors = _streamPipelineBehaviorCreators[requestType] ?? [];
 
     return behaviors.fold<StreamHandlerDelegate<RS>>(
-      () => handler.handle(request),
-      (prev, curr) => () => curr().handle(request, () => _nextWrapper(prev())),
+      () => handler.handle(request) as Stream<RS>,
+      (prev, curr) => () =>
+          curr().handle(request, () => _nextWrapper(prev())) as Stream<RS>,
     )();
   }
 
   @override
-  Future<void> publish<N extends Notification>(N notification) async {
-    final handlerCreator = _notificationHandlerCreators[N];
+  Future<void> publish<N extends Notification>({
+    required N notification,
+    required Type notificationType,
+  }) async {
+    final handlerCreator = _notificationHandlerCreators[notificationType];
 
-    if (handlerCreator is! NotificationHandlerCreator<N>) {
-      throw NotificationHandlerNotRegistered<NotificationHandlerCreator<N>>();
+    if (handlerCreator == null) {
+      throw NotificationHandlerNotRegistered(notificationType);
     }
 
     final handler = handlerCreator.call();

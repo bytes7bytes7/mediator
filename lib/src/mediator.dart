@@ -1,10 +1,9 @@
+import 'dart:async';
 import 'dart:collection';
 
-import 'exceptions/exceptions.dart';
-import 'models/models.dart';
-import 'pipeline/pipeline.dart';
-import 'publisher.dart';
-import 'sender.dart';
+import 'publisher/publisher.dart';
+import 'sender/exceptions/exceptions.dart';
+import 'sender/sender.dart';
 
 part '_mediator.dart';
 

@@ -1,11 +1,10 @@
 import 'dart:async';
 
-import '../models/request.dart';
-import 'pipeline_behavior.dart';
+import '../sender.dart';
 import 'request_exception_action.dart';
 
-class RequestExceptionActionProcessorBehavior<RQ extends Request<RS>, RS>
-    implements PipelineBehavior<RQ, RS> {
+class RequestExceptionActionProcessorBehavior<RS, RQ extends Request<RS>>
+    implements PipelineBehavior<RS, RQ> {
   const RequestExceptionActionProcessorBehavior(this._actions);
 
   final List<RequestExceptionAction<RQ, Exception>> _actions;

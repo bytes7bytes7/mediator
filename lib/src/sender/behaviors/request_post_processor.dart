@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import '../models/request.dart';
+import '../sender.dart';
 
-abstract class RequestPostProcessor<RQ extends Request<RS>, RS> {
+abstract class RequestPostProcessor<RS, RQ extends Request<RS>> {
   const RequestPostProcessor();
 
   FutureOr<void> process(RQ request, RS response);

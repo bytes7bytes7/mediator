@@ -1,8 +1,8 @@
-import '../models/models.dart';
+part of 'sender.dart';
 
 typedef StreamHandlerDelegate<RS> = Stream<RS> Function();
 
-abstract class StreamPipelineBehavior<RQ extends StreamRequest<RS>, RS> {
+abstract class StreamPipelineBehavior<RS, RQ extends StreamRequest<RS>> {
   const StreamPipelineBehavior();
 
   Stream<RS> handle(

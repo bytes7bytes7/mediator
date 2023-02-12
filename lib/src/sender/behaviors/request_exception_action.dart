@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 
-import '../models/request.dart';
+import '../sender.dart';
 
 abstract class RequestExceptionAction<RQ extends Request, E extends Exception> {
   const RequestExceptionAction();

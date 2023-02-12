@@ -1,11 +1,9 @@
-import 'dart:async';
-
-import '../models/request.dart';
+part of 'sender.dart';
 
 typedef RequestHandlerDelegate<RS> = FutureOr<RS> Function();
 
 /// [RS] - response.
-abstract class PipelineBehavior<RQ extends Request<RS>, RS> {
+abstract class PipelineBehavior<RS, RQ extends Request<RS>> {
   const PipelineBehavior();
 
   FutureOr<RS> handle(

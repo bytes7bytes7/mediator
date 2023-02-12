@@ -27,11 +27,9 @@ void main() {
         'throws when no notification handlers registered',
         () async {
           await expectLater(
-            () => publisher.publish(postLiked),
+            () => postLiked.publishTo(publisher),
             throwsA(
-              TypeMatcher<
-                  NotificationHandlerNotRegistered<
-                      NotificationHandlerCreator<PostLiked>>>(),
+              TypeMatcher<NotificationHandlerNotRegistered>(),
             ),
           );
         },
@@ -44,8 +42,8 @@ void main() {
           publisher.registerNotificationHandler(() => postLikedHandler);
 
           await expectLater(
-            () => publisher.publish(postLiked),
-            completion(null),
+            () => postLiked.publishTo(publisher),
+            returnsNormally,
           );
         },
       );

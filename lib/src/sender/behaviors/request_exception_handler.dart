@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 
-import '../models/request.dart';
+import '../sender.dart';
 import 'request_exception_handler_state.dart';
 
-abstract class RequestExceptionHandler<RQ extends Request<RS>, RS,
+abstract class RequestExceptionHandler<RS, RQ extends Request<RS>,
     E extends Exception> {
   const RequestExceptionHandler();
 

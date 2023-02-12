@@ -1,14 +1,13 @@
 import 'dart:async';
 
-import '../models/request.dart';
-import 'pipeline_behavior.dart';
+import '../sender.dart';
 import 'request_post_processor.dart';
 
-class RequestPostProcessorBehavior<RQ extends Request<RS>, RS>
-    implements PipelineBehavior<RQ, RS> {
+class RequestPostProcessorBehavior<RS, RQ extends Request<RS>>
+    implements PipelineBehavior<RS, RQ> {
   const RequestPostProcessorBehavior(this._postProcessors);
 
-  final List<RequestPostProcessor<RQ, RS>> _postProcessors;
+  final List<RequestPostProcessor<RS, RQ>> _postProcessors;
 
   @override
   FutureOr<RS> handle(RQ request, RequestHandlerDelegate<RS> next) async {

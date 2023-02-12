@@ -18,16 +18,16 @@ class AuthResult {
 }
 
 class LoginCommand extends Request<AuthResult> {
-  const LoginCommand({
+  LoginCommand({
     required this.name,
     required this.password,
-  });
+  }) : super(LoginCommand);
 
   final String name;
   final String password;
 }
 
-class LoginCommandHandler extends RequestHandler<LoginCommand, AuthResult> {
+class LoginCommandHandler extends RequestHandler<AuthResult, LoginCommand> {
   const LoginCommandHandler();
 
   @override
@@ -41,7 +41,7 @@ class LoginCommandHandler extends RequestHandler<LoginCommand, AuthResult> {
 }
 
 class LoginNameValidationBehavior
-    extends PipelineBehavior<LoginCommand, AuthResult> {
+    extends PipelineBehavior<AuthResult, LoginCommand> {
   const LoginNameValidationBehavior();
 
   @override
@@ -61,7 +61,7 @@ class LoginNameValidationBehavior
 }
 
 class LoginPasswordValidationBehavior
-    extends PipelineBehavior<LoginCommand, AuthResult> {
+    extends PipelineBehavior<AuthResult, LoginCommand> {
   const LoginPasswordValidationBehavior();
 
   @override
@@ -80,7 +80,7 @@ class LoginPasswordValidationBehavior
   }
 }
 
-class Connecting extends RequestPreProcessor<LoginCommand> {
+class Connecting extends RequestPreProcessor<AuthResult, LoginCommand> {
   const Connecting();
 
   @override
@@ -89,7 +89,7 @@ class Connecting extends RequestPreProcessor<LoginCommand> {
   }
 }
 
-class PackingData extends RequestPreProcessor<LoginCommand> {
+class PackingData extends RequestPreProcessor<AuthResult, LoginCommand> {
   const PackingData();
 
   @override
@@ -100,15 +100,23 @@ class PackingData extends RequestPreProcessor<LoginCommand> {
 
 Future<void> main() async {
   final mediator = Mediator()
-    ..registerRequestHandler(() => const LoginCommandHandler())
-    ..registerPipelineBehavior(() => const LoginNameValidationBehavior())
-    ..registerPipelineBehavior(() => const LoginPasswordValidationBehavior())
+    ..registerRequestHandler(
+      RequestHandlerMeta.create(LoginCommandHandler.new),
+    )
     ..registerPipelineBehavior(
-      () => const RequestPreProcessorBehavior<LoginCommand, AuthResult>(
-        [
-          Connecting(),
-          PackingData(),
-        ],
+      PipelineBehaviorMeta.create(LoginNameValidationBehavior.new),
+    )
+    ..registerPipelineBehavior(
+      PipelineBehaviorMeta.create(LoginPasswordValidationBehavior.new),
+    )
+    ..registerPipelineBehavior(
+      PipelineBehaviorMeta.create(
+        () => RequestPreProcessorBehavior(
+          [
+            Connecting(),
+            PackingData(),
+          ],
+        ),
       ),
     );
 
@@ -129,16 +137,29 @@ Future<void> main() async {
       'admin',
       '',
     ),
+    MapEntry(
+      '',
+      '',
+    ),
   ];
 
   for (final cred in credentials) {
-    final authResult = await mediator.send<LoginCommand, AuthResult>(
-      LoginCommand(
+    final authResult = await LoginCommand(
+      name: cred.key,
+      password: cred.value,
+    ).sendTo(mediator);
+
+    print('isLoggedIn: ${authResult.isLoggedIn}');
+    print('error: ${authResult.error}');
+    print('======');
+  }
+
+  for (final cred in credentials) {
+    print(
+      await LoginCommand(
         name: cred.key,
         password: cred.value,
-      ),
+      ).sendTo(mediator),
     );
-
-    print(authResult);
   }
 }
