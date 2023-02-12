@@ -12,17 +12,17 @@ class _Mediator implements Mediator {
       HashMap<Type, List<StreamPipelineBehaviorCreator>>();
 
   @override
-  void registerRequestHandler(
-    RequestHandlerMeta meta,
+  void registerRequestHandler<RS, RQ extends Request<RS>>(
+    RequestHandlerCreator<RS, RQ> creator,
   ) {
-    _requestHandlerCreators[meta.requestType] = meta.handlerCreator;
+    _requestHandlerCreators[RQ] = creator;
   }
 
   @override
-  void registerStreamRequestHandler(
-    StreamRequestHandlerMeta meta,
+  void registerStreamRequestHandler<RS, RQ extends StreamRequest<RS>>(
+    StreamRequestHandlerCreator<RS, RQ> creator,
   ) {
-    _streamRequestHandlerCreators[meta.requestType] = meta.handlerCreator;
+    _streamRequestHandlerCreators[RQ] = creator;
   }
 
   @override
@@ -33,33 +33,32 @@ class _Mediator implements Mediator {
   }
 
   @override
-  void registerPipelineBehavior(
-    PipelineBehaviorMeta meta,
+  void registerPipelineBehavior<RS, RQ extends Request<RS>>(
+    PipelineBehaviorCreator<RS, RQ> creator,
   ) {
-    final creators = _pipelineBehaviorCreators[meta.requestType];
+    final creators = _pipelineBehaviorCreators[RQ];
 
     if (creators == null) {
-      _pipelineBehaviorCreators[meta.requestType] = <PipelineBehaviorCreator>[
-        meta.behaviorCreator,
+      _pipelineBehaviorCreators[RQ] = <PipelineBehaviorCreator>[
+        creator,
       ];
     } else {
-      _pipelineBehaviorCreators[meta.requestType] = creators
-        ..add(meta.behaviorCreator);
+      _pipelineBehaviorCreators[RQ] = creators..add(creator);
     }
   }
 
   @override
-  void registerStreamPipelineBehavior(
-    StreamPipelineBehaviorMeta meta,
+  void registerStreamPipelineBehavior<RS, RQ extends StreamRequest<RS>>(
+    StreamPipelineBehaviorCreator<RS, RQ> creator,
   ) {
-    final creators = _streamPipelineBehaviorCreators[meta.requestType];
+    final creators = _streamPipelineBehaviorCreators[RQ];
 
     if (creators == null) {
-      _streamPipelineBehaviorCreators[meta.requestType] =
-          <StreamPipelineBehaviorCreator>[meta.behaviorCreator];
+      _streamPipelineBehaviorCreators[RQ] = <StreamPipelineBehaviorCreator>[
+        creator,
+      ];
     } else {
-      _streamPipelineBehaviorCreators[meta.requestType] = creators
-        ..add(meta.behaviorCreator);
+      _streamPipelineBehaviorCreators[RQ] = creators..add(creator);
     }
   }
 

@@ -67,7 +67,7 @@ void main() {
         'throws when proper request handlers is not registered',
         () async {
           sender.registerRequestHandler(
-            RequestHandlerMeta.create(() => logOutHandler),
+            () => logOutHandler,
           );
 
           await expectLater(
@@ -96,7 +96,7 @@ void main() {
         () async {
           when(() => logInHandler.handle(any())).thenReturn(authResult);
           sender.registerRequestHandler(
-            RequestHandlerMeta.create(() => logInHandler),
+            () => logInHandler,
           );
 
           await expectLater(
@@ -112,7 +112,7 @@ void main() {
           when(() => getMessagesHandler.handle(any()))
               .thenAnswer((_) => Stream.value(message));
           sender.registerStreamRequestHandler(
-            StreamRequestHandlerMeta.create(() => getMessagesHandler),
+            () => getMessagesHandler,
           );
 
           await expectLater(
@@ -129,10 +129,10 @@ void main() {
           when(() => logInHandler.handle(any())).thenReturn(authResult);
           sender
             ..registerRequestHandler(
-              RequestHandlerMeta.create(() => logInHandler),
+              () => logInHandler,
             )
             ..registerRequestHandler(
-              RequestHandlerMeta.create(() => logOutHandler),
+              () => logOutHandler,
             );
 
           await expectLater(
@@ -149,10 +149,10 @@ void main() {
           when(() => logInHandler.handle(any())).thenReturn(authResult);
           sender
             ..registerRequestHandler(
-              RequestHandlerMeta.create(() => logOutHandler),
+              () => logOutHandler,
             )
             ..registerRequestHandler(
-              RequestHandlerMeta.create(() => logInHandler),
+              () => logInHandler,
             );
 
           await expectLater(
@@ -170,10 +170,10 @@ void main() {
               .thenAnswer((_) => Stream.value(message));
           sender
             ..registerStreamRequestHandler(
-              StreamRequestHandlerMeta.create(() => getMessagesHandler),
+              () => getMessagesHandler,
             )
             ..registerStreamRequestHandler(
-              StreamRequestHandlerMeta.create(() => editMessageHandler),
+              () => editMessageHandler,
             );
 
           await expectLater(
@@ -191,10 +191,10 @@ void main() {
               .thenAnswer((_) => Stream.value(message));
           sender
             ..registerStreamRequestHandler(
-              StreamRequestHandlerMeta.create(() => editMessageHandler),
+              () => editMessageHandler,
             )
             ..registerStreamRequestHandler(
-              StreamRequestHandlerMeta.create(() => getMessagesHandler),
+              () => getMessagesHandler,
             );
 
           await expectLater(

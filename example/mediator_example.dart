@@ -101,22 +101,20 @@ class PackingData extends RequestPreProcessor<AuthResult, LoginCommand> {
 Future<void> main() async {
   final mediator = Mediator()
     ..registerRequestHandler(
-      RequestHandlerMeta.create(LoginCommandHandler.new),
+      LoginCommandHandler.new,
     )
     ..registerPipelineBehavior(
-      PipelineBehaviorMeta.create(LoginNameValidationBehavior.new),
+      LoginNameValidationBehavior.new,
     )
     ..registerPipelineBehavior(
-      PipelineBehaviorMeta.create(LoginPasswordValidationBehavior.new),
+      LoginPasswordValidationBehavior.new,
     )
     ..registerPipelineBehavior(
-      PipelineBehaviorMeta.create(
-        () => RequestPreProcessorBehavior(
-          [
-            Connecting(),
-            PackingData(),
-          ],
-        ),
+      () => RequestPreProcessorBehavior(
+        [
+          Connecting(),
+          PackingData(),
+        ],
       ),
     );
 

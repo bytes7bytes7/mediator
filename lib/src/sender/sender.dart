@@ -2,23 +2,15 @@ import 'dart:async';
 
 part 'pipeline_behavior.dart';
 
-part 'pipeline_behavior_meta.dart';
-
 part 'request.dart';
 
 part 'request_handler.dart';
-
-part 'request_handler_meta.dart';
 
 part 'stream_request.dart';
 
 part 'stream_request_handler.dart';
 
 part 'stream_pipeline_behavior.dart';
-
-part 'stream_request_handler_meta.dart';
-
-part 'stream_pipeline_behavior_meta.dart';
 
 typedef RequestHandlerCreator<RS, RQ extends Request<RS>>
     = RequestHandler<RS, RQ> Function();
@@ -32,20 +24,20 @@ typedef StreamPipelineBehaviorCreator<RS, RQ extends StreamRequest<RS>>
 abstract class Sender {
   const Sender();
 
-  void registerRequestHandler(
-    RequestHandlerMeta meta,
+  void registerRequestHandler<RS, RQ extends Request<RS>>(
+    RequestHandlerCreator<RS, RQ> creator,
   );
 
-  void registerStreamRequestHandler(
-    StreamRequestHandlerMeta meta,
+  void registerStreamRequestHandler<RS, RQ extends StreamRequest<RS>>(
+    StreamRequestHandlerCreator<RS, RQ> creator,
   );
 
-  void registerPipelineBehavior(
-    PipelineBehaviorMeta meta,
+  void registerPipelineBehavior<RS, RQ extends Request<RS>>(
+    PipelineBehaviorCreator<RS, RQ> creator,
   );
 
-  void registerStreamPipelineBehavior(
-    StreamPipelineBehaviorMeta meta,
+  void registerStreamPipelineBehavior<RS, RQ extends StreamRequest<RS>>(
+    StreamPipelineBehaviorCreator<RS, RQ> creator,
   );
 
   @Deprecated('Use `sendTo` method of `Request` instead')
