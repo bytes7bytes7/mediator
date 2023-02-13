@@ -17,21 +17,21 @@ class AuthResult {
   String toString() => '$AuthResult {isLoggedIn: $isLoggedIn, error: $error}';
 }
 
-class LoginCommand extends Request<AuthResult> {
-  LoginCommand({
+class LogInCommand extends Request<AuthResult> {
+  LogInCommand({
     required this.name,
     required this.password,
-  }) : super(LoginCommand);
+  }) : super(LogInCommand);
 
   final String name;
   final String password;
 }
 
-class LoginCommandHandler extends RequestHandler<AuthResult, LoginCommand> {
-  const LoginCommandHandler();
+class LogInCommandHandler extends RequestHandler<AuthResult, LogInCommand> {
+  const LogInCommandHandler();
 
   @override
-  FutureOr<AuthResult> handle(LoginCommand request) {
+  FutureOr<AuthResult> handle(LogInCommand request) {
     if (request.name == 'admin' && request.password == 'admin') {
       return const AuthResult(true);
     }
@@ -40,13 +40,13 @@ class LoginCommandHandler extends RequestHandler<AuthResult, LoginCommand> {
   }
 }
 
-class LoginNameValidationBehavior
-    extends PipelineBehavior<AuthResult, LoginCommand> {
-  const LoginNameValidationBehavior();
+class LogInNameValidationBehavior
+    extends PipelineBehavior<AuthResult, LogInCommand> {
+  const LogInNameValidationBehavior();
 
   @override
   FutureOr<AuthResult> handle(
-    LoginCommand request,
+    LogInCommand request,
     RequestHandlerDelegate<AuthResult> next,
   ) {
     if (request.name.isEmpty) {
@@ -60,13 +60,13 @@ class LoginNameValidationBehavior
   }
 }
 
-class LoginPasswordValidationBehavior
-    extends PipelineBehavior<AuthResult, LoginCommand> {
-  const LoginPasswordValidationBehavior();
+class LogInPasswordValidationBehavior
+    extends PipelineBehavior<AuthResult, LogInCommand> {
+  const LogInPasswordValidationBehavior();
 
   @override
   FutureOr<AuthResult> handle(
-    LoginCommand request,
+    LogInCommand request,
     RequestHandlerDelegate<AuthResult> next,
   ) {
     if (request.password.isEmpty) {
@@ -80,20 +80,20 @@ class LoginPasswordValidationBehavior
   }
 }
 
-class Connecting extends RequestPreProcessor<AuthResult, LoginCommand> {
+class Connecting extends RequestPreProcessor<AuthResult, LogInCommand> {
   const Connecting();
 
   @override
-  FutureOr<void> process(LoginCommand request) {
+  FutureOr<void> process(LogInCommand request) {
     print('Connecting to server');
   }
 }
 
-class PackingData extends RequestPreProcessor<AuthResult, LoginCommand> {
+class PackingData extends RequestPreProcessor<AuthResult, LogInCommand> {
   const PackingData();
 
   @override
-  FutureOr<void> process(LoginCommand request) {
+  FutureOr<void> process(LogInCommand request) {
     print('Packing data');
   }
 }
@@ -101,13 +101,13 @@ class PackingData extends RequestPreProcessor<AuthResult, LoginCommand> {
 Future<void> main() async {
   final mediator = Mediator()
     ..registerRequestHandler(
-      LoginCommandHandler.new,
+      LogInCommandHandler.new,
     )
     ..registerPipelineBehavior(
-      LoginNameValidationBehavior.new,
+      LogInNameValidationBehavior.new,
     )
     ..registerPipelineBehavior(
-      LoginPasswordValidationBehavior.new,
+      LogInPasswordValidationBehavior.new,
     )
     ..registerPipelineBehavior(
       () => RequestPreProcessorBehavior(
@@ -142,7 +142,7 @@ Future<void> main() async {
   ];
 
   for (final cred in credentials) {
-    final authResult = await LoginCommand(
+    final authResult = await LogInCommand(
       name: cred.key,
       password: cred.value,
     ).sendTo(mediator);
@@ -154,7 +154,7 @@ Future<void> main() async {
 
   for (final cred in credentials) {
     print(
-      await LoginCommand(
+      await LogInCommand(
         name: cred.key,
         password: cred.value,
       ).sendTo(mediator),

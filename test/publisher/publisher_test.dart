@@ -26,7 +26,7 @@ void main() {
     'Publisher',
     () {
       test(
-        'throws when no notification handlers registered',
+        'throws when no $NotificationHandler is registered',
         () async {
           await expectLater(
             () => postLiked.publishTo(publisher),
@@ -38,7 +38,7 @@ void main() {
       );
 
       test(
-        'throws when proper notification handlers is not registered',
+        'throws when a proper $NotificationHandler is not registered',
         () async {
           publisher.registerNotificationHandler(() => tagUserHandler);
 
@@ -52,7 +52,7 @@ void main() {
       );
 
       test(
-        'does not throw when a proper notification handler is registered',
+        'does not throw when a proper $NotificationHandler is registered',
         () async {
           when(() => postLikedHandler.handle(any())).thenReturn(null);
           publisher.registerNotificationHandler(() => postLikedHandler);
@@ -65,8 +65,8 @@ void main() {
       );
 
       test(
-        'first notification handler works well when multiple notification '
-        'handlers are registered',
+        'first $NotificationHandler works well when multiple '
+        '${NotificationHandler}s are registered',
         () async {
           when(() => postLikedHandler.handle(any())).thenReturn(null);
           publisher
@@ -81,8 +81,8 @@ void main() {
       );
 
       test(
-        'last notification handler works well when multiple notification '
-        'handlers are registered',
+        'last $NotificationHandler works well when multiple '
+        '${NotificationHandler}s are registered',
         () async {
           when(() => postLikedHandler.handle(any())).thenReturn(null);
           publisher

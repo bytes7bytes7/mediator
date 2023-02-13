@@ -4,6 +4,9 @@ import 'package:test/test.dart';
 
 import 'handlers/handlers.dart';
 import 'models/models.dart';
+import 'processors/check_connection_pre_processor.dart';
+import 'processors/loading_pre_processor.dart';
+import 'processors/packing_data_pre_processor.dart';
 import 'requests/requests.dart';
 
 void main() {
@@ -16,6 +19,10 @@ void main() {
   late RequestHandler<AuthResult, LogOutCommand> logOutHandler;
   late StreamRequestHandler<Message, GetMessagesCommand> getMessagesHandler;
   late StreamRequestHandler<Message, EditMessageCommand> editMessageHandler;
+  late RequestPreProcessor<AuthResult, LogInCommand> loadingPreProcessor;
+  late RequestPreProcessor<AuthResult, LogInCommand> packingDataPreProcessor;
+  late RequestPreProcessor<AuthResult, LogOutCommand>
+      checkConnectionPreProcessor;
 
   setUpAll(() {
     registerFallbackValue(LogInCommand(name: '', password: ''));
@@ -34,13 +41,16 @@ void main() {
     logOutHandler = MockLogOutCommandHandler();
     getMessagesHandler = MockGetMessagesCommandHandler();
     editMessageHandler = MockEditMessageCommandHandler();
+    loadingPreProcessor = MockLoadingPreProcessor();
+    packingDataPreProcessor = MockPackingDataPreProcessor();
+    checkConnectionPreProcessor = MockCheckConnectionPreProcessor();
   });
 
   group(
     'Sender',
     () {
       test(
-        'throws when no request handlers registered',
+        'throws when no $RequestHandler is registered',
         () async {
           await expectLater(
             () => logInCommand.sendTo(sender),
@@ -52,7 +62,7 @@ void main() {
       );
 
       test(
-        'throws when no stream request handlers registered',
+        'throws when no $StreamRequestHandler is registered',
         () async {
           await expectLater(
             () => getMessagesCommand.createStream(sender),
@@ -64,7 +74,7 @@ void main() {
       );
 
       test(
-        'throws when proper request handlers is not registered',
+        'throws when a roper $RequestHandler is not registered',
         () async {
           sender.registerRequestHandler(
             () => logOutHandler,
@@ -80,7 +90,7 @@ void main() {
       );
 
       test(
-        'throws when proper stream request handlers is not registered',
+        'throws when a proper $StreamRequestHandler is not registered',
         () async {
           await expectLater(
             () => getMessagesCommand.createStream(sender),
@@ -92,9 +102,10 @@ void main() {
       );
 
       test(
-        'does not throw when a proper request handler is registered',
+        'does not throw when a proper $RequestHandler is registered',
         () async {
           when(() => logInHandler.handle(any())).thenReturn(authResult);
+
           sender.registerRequestHandler(
             () => logInHandler,
           );
@@ -107,10 +118,11 @@ void main() {
       );
 
       test(
-        'does not throw when a proper stream request handler is registered',
+        'does not throw when a proper $StreamRequestHandler is registered',
         () async {
           when(() => getMessagesHandler.handle(any()))
               .thenAnswer((_) => Stream.value(message));
+
           sender.registerStreamRequestHandler(
             () => getMessagesHandler,
           );
@@ -123,10 +135,11 @@ void main() {
       );
 
       test(
-        'first request handler works well when multiple request '
-        'handlers are registered',
+        'first $RequestHandler works well when multiple ${RequestHandler}s '
+        'are registered',
         () async {
           when(() => logInHandler.handle(any())).thenReturn(authResult);
+
           sender
             ..registerRequestHandler(
               () => logInHandler,
@@ -143,10 +156,11 @@ void main() {
       );
 
       test(
-        'last request handler works well when multiple request '
-        'handlers are registered',
+        'last $RequestHandler works well when multiple ${RequestHandler}s '
+        'are registered',
         () async {
           when(() => logInHandler.handle(any())).thenReturn(authResult);
+
           sender
             ..registerRequestHandler(
               () => logOutHandler,
@@ -163,11 +177,12 @@ void main() {
       );
 
       test(
-        'first stream request handler works well when multiple '
-        'stream request handlers are registered',
+        'first $StreamRequestHandler works well when multiple '
+        '${StreamRequestHandler}s are registered',
         () async {
           when(() => getMessagesHandler.handle(any()))
               .thenAnswer((_) => Stream.value(message));
+
           sender
             ..registerStreamRequestHandler(
               () => getMessagesHandler,
@@ -184,11 +199,12 @@ void main() {
       );
 
       test(
-        'last stream request handler works well when multiple '
-        'stream request handlers are registered',
+        'last $StreamRequestHandler works well when multiple '
+        '${StreamRequestHandler}s are registered',
         () async {
           when(() => getMessagesHandler.handle(any()))
               .thenAnswer((_) => Stream.value(message));
+
           sender
             ..registerStreamRequestHandler(
               () => editMessageHandler,
@@ -201,6 +217,150 @@ void main() {
             getMessagesCommand.createStream(sender).first,
             completion(message),
           );
+        },
+      );
+
+      test(
+        'single $RequestPreProcessorBehavior with 1 $RequestPreProcessor works',
+        () async {
+          final events = <String>[];
+          final loadingEvent = 'loading';
+
+          when(() => logInHandler.handle(any())).thenReturn(authResult);
+          when(() => loadingPreProcessor.process(any()))
+              .thenAnswer((_) => events.add(loadingEvent));
+
+          sender
+            ..registerRequestHandler(() => logInHandler)
+            ..registerPipelineBehavior(
+              () => RequestPreProcessorBehavior([loadingPreProcessor]),
+            );
+
+          await logInCommand.sendTo(sender);
+
+          expect(events, [loadingEvent]);
+        },
+      );
+
+      test(
+        'single $RequestPreProcessorBehavior with multiple '
+        '${RequestPreProcessor}s works',
+        () async {
+          final events = <String>[];
+          final loadingEvent = 'loading';
+          final packingDataEvent = 'packing data';
+
+          when(() => logInHandler.handle(any())).thenReturn(authResult);
+          when(() => loadingPreProcessor.process(any()))
+              .thenAnswer((_) => events.add(loadingEvent));
+          when(() => packingDataPreProcessor.process(any()))
+              .thenAnswer((_) => events.add(packingDataEvent));
+
+          sender
+            ..registerRequestHandler(() => logInHandler)
+            ..registerPipelineBehavior(
+              () => RequestPreProcessorBehavior([
+                loadingPreProcessor,
+                packingDataPreProcessor,
+              ]),
+            );
+
+          await logInCommand.sendTo(sender);
+
+          expect(
+            events,
+            [
+              loadingEvent,
+              packingDataEvent,
+            ],
+          );
+        },
+      );
+
+      test(
+        'multiple ${RequestPreProcessorBehavior}s that belong to the '
+        'same $Request work in proper order',
+        () async {
+          final events = <String>[];
+          final loadingEvent = 'loading';
+          final packingDataEvent = 'packing data';
+
+          when(() => logInHandler.handle(any())).thenReturn(authResult);
+          when(() => loadingPreProcessor.process(any()))
+              .thenAnswer((_) => events.add(loadingEvent));
+          when(() => packingDataPreProcessor.process(any()))
+              .thenAnswer((_) => events.add(packingDataEvent));
+
+          sender
+            ..registerRequestHandler(() => logInHandler)
+            ..registerPipelineBehavior(
+              () => RequestPreProcessorBehavior([loadingPreProcessor]),
+            )
+            ..registerPipelineBehavior(
+              () => RequestPreProcessorBehavior([packingDataPreProcessor]),
+            );
+
+          await logInCommand.sendTo(sender);
+
+          expect(
+            events,
+            [
+              loadingEvent,
+              packingDataEvent,
+            ],
+          );
+        },
+      );
+
+      test(
+        'first $RequestPreProcessorBehavior works when multiple '
+        '${RequestPreProcessorBehavior}s are registered',
+        () async {
+          final events = <String>[];
+          final loadingEvent = 'loading';
+
+          when(() => logInHandler.handle(any())).thenReturn(authResult);
+          when(() => loadingPreProcessor.process(any()))
+              .thenAnswer((_) => events.add(loadingEvent));
+
+          sender
+            ..registerRequestHandler(() => logInHandler)
+            ..registerPipelineBehavior(
+              () => RequestPreProcessorBehavior([loadingPreProcessor]),
+            )
+            ..registerPipelineBehavior(
+              () => RequestPreProcessorBehavior([checkConnectionPreProcessor]),
+            );
+
+          await logInCommand.sendTo(sender);
+
+          expect(events, [loadingEvent]);
+        },
+      );
+
+      test(
+        'last $RequestPreProcessorBehavior works when multiple '
+        '${RequestPreProcessorBehavior}s are registered',
+        () async {
+          final events = <String>[];
+          final loadingEvent = 'loading';
+
+          when(() => logInHandler.handle(any())).thenReturn(authResult);
+          when(() => loadingPreProcessor.process(any()))
+              .thenAnswer((_) => events.add(loadingEvent));
+
+          sender
+            ..registerRequestHandler(() => logInHandler)
+            ..registerPipelineBehavior(
+              () => RequestPreProcessorBehavior([checkConnectionPreProcessor]),
+            )
+            ..registerPipelineBehavior(
+              () => RequestPreProcessorBehavior([loadingPreProcessor]),
+            );
+
+          await logInCommand.sendTo(sender);
+
+          expect(events, [loadingEvent]);
         },
       );
     },

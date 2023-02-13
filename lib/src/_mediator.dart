@@ -79,7 +79,7 @@ class _Mediator implements Mediator {
 
     final handler = handlerCreator.call();
 
-    final behaviors = _pipelineBehaviorCreators[requestType] ?? [];
+    final behaviors = _pipelineBehaviorCreators[requestType]?.reversed ?? [];
 
     return behaviors.fold<RequestHandlerDelegate<RS>>(
       () => handler.handle(request) as FutureOr<RS>,
@@ -104,7 +104,8 @@ class _Mediator implements Mediator {
 
     final handler = handlerCreator.call();
 
-    final behaviors = _streamPipelineBehaviorCreators[requestType] ?? [];
+    final behaviors =
+        _streamPipelineBehaviorCreators[requestType]?.reversed ?? [];
 
     return behaviors.fold<StreamHandlerDelegate<RS>>(
       () => handler.handle(request) as Stream<RS>,
