@@ -4,5 +4,5 @@ import 'package:mocktail/mocktail.dart';
 import '../models/auth_result.dart';
 import '../requests/log_in_command.dart';
 
-class MockLogInCommandHandler extends Mock
-    implements RequestHandler<AuthResult, LogInCommand> {}
+class MockSaveTokenPostProcessor extends Mock
+    implements RequestPostProcessor<AuthResult, LogInCommand> {}

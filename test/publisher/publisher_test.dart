@@ -65,8 +65,8 @@ void main() {
       );
 
       test(
-        'first $NotificationHandler works well when multiple '
-        '${NotificationHandler}s are registered',
+        'first $NotificationHandler works well when multiple'
+        ' ${NotificationHandler}s are registered',
         () async {
           when(() => postLikedHandler.handle(any())).thenReturn(null);
           publisher
@@ -81,8 +81,8 @@ void main() {
       );
 
       test(
-        'last $NotificationHandler works well when multiple '
-        '${NotificationHandler}s are registered',
+        'last $NotificationHandler works well when multiple'
+        ' ${NotificationHandler}s are registered',
         () async {
           when(() => postLikedHandler.handle(any())).thenReturn(null);
           publisher

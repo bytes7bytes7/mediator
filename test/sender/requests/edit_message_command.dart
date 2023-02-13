@@ -1,6 +1,6 @@
 import 'package:mediator/mediator.dart';
 
-import '../models/models.dart';
+import '../models/message.dart';
 
 class EditMessageCommand extends StreamRequest<Message> {
   EditMessageCommand() : super(EditMessageCommand);

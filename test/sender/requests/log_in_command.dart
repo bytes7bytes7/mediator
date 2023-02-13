@@ -1,6 +1,6 @@
 import 'package:mediator/mediator.dart';
 
-import '../models/models.dart';
+import '../models/auth_result.dart';
 
 class LogInCommand extends Request<AuthResult> {
   LogInCommand({
