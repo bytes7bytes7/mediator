@@ -1,5 +1,3 @@
-import '../sender.dart';
-
 class RequestHandlerNotRegistered implements Exception {
   const RequestHandlerNotRegistered({
     required this.requestType,
@@ -11,5 +9,5 @@ class RequestHandlerNotRegistered implements Exception {
 
   @override
   String toString() =>
-      '$RequestHandler<$requestType, $responseType> is not registered';
+      'RequestHandler<$requestType, $responseType> is not registered';
 }

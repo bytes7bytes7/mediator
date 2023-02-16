@@ -5,7 +5,7 @@ class _Mediator implements Mediator {
   final _streamRequestHandlerCreators =
       HashMap<Type, StreamRequestHandlerCreator>();
   final _notificationHandlerCreators =
-      HashMap<Type, NotificationHandlerCreator>();
+      HashMap<Type, List<NotificationHandlerCreator>>();
   final _pipelineBehaviorCreators =
       HashMap<Type, List<PipelineBehaviorCreator>>();
   final _streamPipelineBehaviorCreators =
@@ -29,7 +29,15 @@ class _Mediator implements Mediator {
   void registerNotificationHandler<N extends Notification>(
     NotificationHandlerCreator<N> creator,
   ) {
-    _notificationHandlerCreators[N] = creator;
+    final creators = _notificationHandlerCreators[N];
+
+    if (creators == null) {
+      _notificationHandlerCreators[N] = <NotificationHandlerCreator<N>>[
+        creator
+      ];
+    } else {
+      _notificationHandlerCreators[N] = creators..add(creator);
+    }
   }
 
   @override
@@ -118,16 +126,18 @@ class _Mediator implements Mediator {
   Future<void> publish<N extends Notification>({
     required N notification,
     required Type notificationType,
-  }) async {
-    final handlerCreator = _notificationHandlerCreators[notificationType];
+  }) {
+    final handlerCreators = _notificationHandlerCreators[notificationType];
 
-    if (handlerCreator == null) {
+    if (handlerCreators == null || handlerCreators.isEmpty) {
       throw NotificationHandlerNotRegistered(notificationType);
     }
 
-    final handler = handlerCreator.call();
+    for (final creator in handlerCreators) {
+      creator.call().handle(notification);
+    }
 
-    return handler.handle(notification);
+    return Future.value(null);
   }
 
   Stream<T> _nextWrapper<T>(Stream<T> items) async* {

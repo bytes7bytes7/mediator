@@ -1,5 +1,3 @@
-part of 'publisher.dart';
-
 class NotificationHandlerNotRegistered implements Exception {
   const NotificationHandlerNotRegistered(this.notificationType);
 
@@ -7,5 +5,5 @@ class NotificationHandlerNotRegistered implements Exception {
 
   @override
   String toString() =>
-      '$NotificationHandler<$notificationType> is not registered';
+      'NotificationHandler<$notificationType> is not registered';
 }

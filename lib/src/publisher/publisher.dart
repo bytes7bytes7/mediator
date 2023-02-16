@@ -4,8 +4,6 @@ part 'notification.dart';
 
 part 'notification_handler.dart';
 
-part 'notification_handler_not_registered.dart';
-
 typedef NotificationHandlerCreator<N extends Notification>
     = NotificationHandler<N> Function();
 
@@ -16,7 +14,7 @@ abstract class Publisher {
     NotificationHandlerCreator<N> creator,
   );
 
-  @Deprecated('Use `publish` method of `Notification` instead')
+  @Deprecated('Use `publishTo` method of `Notification` instead')
   Future<void> publish<N extends Notification>({
     required N notification,
     required Type notificationType,

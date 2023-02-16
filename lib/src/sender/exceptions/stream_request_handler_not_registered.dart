@@ -1,5 +1,3 @@
-import '../sender.dart';
-
 class StreamRequestHandlerNotRegistered implements Exception {
   const StreamRequestHandlerNotRegistered({
     required this.requestType,
@@ -11,5 +9,5 @@ class StreamRequestHandlerNotRegistered implements Exception {
 
   @override
   String toString() =>
-      '$StreamRequestHandler<$requestType, $responseType> is not registered';
+      'StreamRequestHandler<$requestType, $responseType> is not registered';
 }
