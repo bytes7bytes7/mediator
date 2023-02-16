@@ -4,7 +4,8 @@ import 'package:meta/meta.dart';
 
 import '../sender.dart';
 
-abstract class RequestExceptionAction<RQ extends Request, E extends Exception> {
+abstract class RequestExceptionAction<RS, RQ extends Request<RS>,
+    E extends Exception> {
   const RequestExceptionAction();
 
   /// Call the super method first.

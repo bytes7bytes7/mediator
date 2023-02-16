@@ -7,7 +7,7 @@ class RequestExceptionActionProcessorBehavior<RS, RQ extends Request<RS>>
     implements PipelineBehavior<RS, RQ> {
   const RequestExceptionActionProcessorBehavior(this._actions);
 
-  final List<RequestExceptionAction<RQ, Exception>> _actions;
+  final List<RequestExceptionAction<RS, RQ, Exception>> _actions;
 
   @override
   FutureOr<RS> handle(RQ request, RequestHandlerDelegate<RS> next) async {
@@ -16,7 +16,7 @@ class RequestExceptionActionProcessorBehavior<RS, RQ extends Request<RS>>
     } catch (e) {
       for (final action in _actions) {
         try {
-          action.execute(request, e);
+          await action.execute(request, e);
         } catch (_) {}
       }
 

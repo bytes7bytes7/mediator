@@ -1,0 +1,1 @@
+class EmptyName implements Exception {}
