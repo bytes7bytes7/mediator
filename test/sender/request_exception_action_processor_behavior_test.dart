@@ -4,8 +4,8 @@ import 'package:test/test.dart';
 
 import 'actions/actions.dart';
 import 'exceptions/exceptions.dart';
-import 'handlers/handlers.dart';
 import 'models/models.dart';
+import 'request_handlers/request_handlers.dart';
 import 'requests/requests.dart';
 
 void main() {
@@ -131,8 +131,8 @@ void main() {
 
       test(
         'All ${RequestExceptionAction}s in different'
-        ' ${RequestExceptionActionProcessorBehavior}s work in order opposite '
-        'to registering order after'
+        ' ${RequestExceptionActionProcessorBehavior}s work in order opposite'
+        ' to registering order after'
         ' $RequestHandler throws',
         () async {
           final events = <String>[];

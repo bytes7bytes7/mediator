@@ -2,9 +2,9 @@ import 'package:mediator/mediator.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-import 'handlers/handlers.dart';
 import 'models/models.dart';
 import 'requests/requests.dart';
+import 'stream_request_handlers/stream_request_handlers.dart';
 
 void main() {
   late Sender sender;

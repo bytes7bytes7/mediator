@@ -2,9 +2,9 @@ import 'package:mediator/mediator.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-import 'handlers/handlers.dart';
 import 'models/models.dart';
 import 'pre_processors/pre_processors.dart';
+import 'request_handlers/request_handlers.dart';
 import 'requests/requests.dart';
 
 void main() {
