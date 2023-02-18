@@ -6,5 +6,5 @@ import '../models/auth_result.dart';
 import '../requests/log_in_command.dart';
 
 // ignore: missing_override_of_must_be_overridden
-class MockEmptyNameAction extends Mock
+class MockShowEmptyNameTextFieldErrorAction extends Mock
     implements RequestExceptionAction<AuthResult, LogInCommand, EmptyName> {}

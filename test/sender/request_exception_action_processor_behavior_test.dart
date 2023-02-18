@@ -1,0 +1,173 @@
+import 'package:mediator/mediator.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:test/test.dart';
+
+import 'actions/actions.dart';
+import 'exceptions/exceptions.dart';
+import 'handlers/handlers.dart';
+import 'models/models.dart';
+import 'requests/requests.dart';
+
+void main() {
+  late Sender sender;
+  late LogInCommand logInCommand;
+  late RequestHandler<AuthResult, LogInCommand> logInHandler;
+  late RequestExceptionAction<AuthResult, LogInCommand, EmptyName>
+      showEmptyNameAlertAction;
+  late RequestExceptionAction<AuthResult, LogInCommand, EmptyName>
+      showEmptyNameTextFieldErrorAction;
+  late RequestExceptionAction<AuthResult, LogOutCommand, CanNotLogOut>
+      showCanNotLogOutAlert;
+
+  setUpAll(() {
+    registerFallbackValue(LogInCommand(name: '', password: ''));
+  });
+
+  setUp(() {
+    sender = Mediator();
+    logInCommand = LogInCommand(name: '', password: '');
+    logInHandler = MockLogInCommandHandler();
+    showEmptyNameAlertAction = MockShowEmptyNameAlertAction();
+    showEmptyNameTextFieldErrorAction = MockShowEmptyNameTextFieldErrorAction();
+    showCanNotLogOutAlert = MockShowCanNotLogOutAlertAction();
+  });
+
+  group(
+    '$RequestExceptionActionProcessorBehavior',
+    () {
+      test(
+        '$RequestExceptionAction works after $RequestHandler throws',
+        () async {
+          final events = <String>[];
+          final emptyNameEvent = 'empty name';
+
+          when(() => logInHandler.handle(any())).thenThrow(EmptyName());
+          when(() => showEmptyNameAlertAction.execute(any(), any()))
+              .thenAnswer((_) => events.add(emptyNameEvent));
+
+          sender
+            ..registerRequestHandler(() => logInHandler)
+            ..registerPipelineBehavior(
+              () => RequestExceptionActionProcessorBehavior(
+                [showEmptyNameAlertAction],
+              ),
+            );
+
+          try {
+            await logInCommand.sendTo(sender);
+          } catch (_) {}
+
+          expect(events, [emptyNameEvent]);
+        },
+      );
+
+      test(
+        'All ${RequestExceptionAction}s in the same'
+        ' $RequestExceptionActionProcessorBehavior work after'
+        ' $RequestHandler throws',
+        () async {
+          final events = <String>[];
+          final emptyNameAlert = 'empty name alert';
+          final emptyNameTextFieldError = 'empty name text field error';
+
+          when(() => logInHandler.handle(any())).thenThrow(EmptyName());
+          when(() => showEmptyNameAlertAction.execute(any(), any()))
+              .thenAnswer((_) => events.add(emptyNameAlert));
+          when(() => showEmptyNameTextFieldErrorAction.execute(any(), any()))
+              .thenAnswer((_) => events.add(emptyNameTextFieldError));
+
+          sender
+            ..registerRequestHandler(() => logInHandler)
+            ..registerPipelineBehavior(
+              () => RequestExceptionActionProcessorBehavior(
+                [
+                  showEmptyNameAlertAction,
+                  showEmptyNameTextFieldErrorAction,
+                ],
+              ),
+            );
+
+          try {
+            await logInCommand.sendTo(sender);
+          } catch (_) {}
+
+          expect(events, [emptyNameAlert, emptyNameTextFieldError]);
+        },
+      );
+
+      test(
+        'A proper $RequestExceptionActionProcessorBehavior works when'
+        ' multiple ${RequestExceptionActionProcessorBehavior}s are registered',
+        () async {
+          final events = <String>[];
+          final emptyNameAlert = 'empty name alert';
+
+          when(() => logInHandler.handle(any())).thenThrow(EmptyName());
+          when(() => showEmptyNameAlertAction.execute(any(), any()))
+              .thenAnswer((_) => events.add(emptyNameAlert));
+
+          sender
+            ..registerRequestHandler(() => logInHandler)
+            ..registerPipelineBehavior(
+              () => RequestExceptionActionProcessorBehavior(
+                [
+                  showEmptyNameAlertAction,
+                ],
+              ),
+            )
+            ..registerPipelineBehavior(
+              () => RequestExceptionActionProcessorBehavior(
+                [showCanNotLogOutAlert],
+              ),
+            );
+
+          try {
+            await logInCommand.sendTo(sender);
+          } catch (_) {}
+
+          expect(events, [emptyNameAlert]);
+        },
+      );
+
+      test(
+        'All ${RequestExceptionAction}s in different'
+        ' ${RequestExceptionActionProcessorBehavior}s work in order opposite '
+        'to registering order after'
+        ' $RequestHandler throws',
+        () async {
+          final events = <String>[];
+          final emptyNameAlert = 'empty name alert';
+          final emptyNameTextFieldError = 'empty name text field error';
+
+          when(() => logInHandler.handle(any())).thenThrow(EmptyName());
+          when(() => showEmptyNameAlertAction.execute(any(), any()))
+              .thenAnswer((_) => events.add(emptyNameAlert));
+          when(() => showEmptyNameTextFieldErrorAction.execute(any(), any()))
+              .thenAnswer((_) => events.add(emptyNameTextFieldError));
+
+          sender
+            ..registerRequestHandler(() => logInHandler)
+            ..registerPipelineBehavior(
+              () => RequestExceptionActionProcessorBehavior(
+                [showEmptyNameAlertAction],
+              ),
+            )
+            ..registerPipelineBehavior(
+              () => RequestExceptionActionProcessorBehavior(
+                [showEmptyNameTextFieldErrorAction],
+              ),
+            );
+
+          try {
+            await logInCommand.sendTo(sender);
+          } catch (_) {}
+
+          expect(events, [
+            emptyNameTextFieldError,
+            emptyNameAlert,
+          ]);
+        },
+      );
+    },
+  );
+}

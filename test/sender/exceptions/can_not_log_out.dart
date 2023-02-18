@@ -1,0 +1,1 @@
+class CanNotLogOut implements Exception {}
