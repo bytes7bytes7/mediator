@@ -1,8 +1,8 @@
 import '../sender.dart';
 import 'request_exception_handler.dart';
 
-extension X<RS, RQ extends Request<RS>, E extends Exception>
-    on RequestExceptionHandler<RS, RQ, E> {
+extension RequestExceptionHandlerWrapperX<RS, RQ extends Request<RS>,
+    E extends Exception> on RequestExceptionHandler<RS, RQ, E> {
   RequestExceptionHandlerWrapper<RS, RQ, E> get wrapper =>
       RequestExceptionHandlerWrapper(this);
 }

@@ -21,6 +21,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(LogInCommand(name: '', password: ''));
+    registerFallbackValue(EmptyName());
   });
 
   setUp(() {
@@ -49,7 +50,7 @@ void main() {
             ..registerRequestHandler(() => logInHandler)
             ..registerPipelineBehavior(
               () => RequestExceptionActionProcessorBehavior(
-                [showEmptyNameAlertAction],
+                [showEmptyNameAlertAction.wrapper],
               ),
             );
 
@@ -81,8 +82,8 @@ void main() {
             ..registerPipelineBehavior(
               () => RequestExceptionActionProcessorBehavior(
                 [
-                  showEmptyNameAlertAction,
-                  showEmptyNameTextFieldErrorAction,
+                  showEmptyNameAlertAction.wrapper,
+                  showEmptyNameTextFieldErrorAction.wrapper,
                 ],
               ),
             );
@@ -111,13 +112,13 @@ void main() {
             ..registerPipelineBehavior(
               () => RequestExceptionActionProcessorBehavior(
                 [
-                  showEmptyNameAlertAction,
+                  showEmptyNameAlertAction.wrapper,
                 ],
               ),
             )
             ..registerPipelineBehavior(
               () => RequestExceptionActionProcessorBehavior(
-                [showCanNotLogOutAlert],
+                [showCanNotLogOutAlert.wrapper],
               ),
             );
 
@@ -149,12 +150,12 @@ void main() {
             ..registerRequestHandler(() => logInHandler)
             ..registerPipelineBehavior(
               () => RequestExceptionActionProcessorBehavior(
-                [showEmptyNameAlertAction],
+                [showEmptyNameAlertAction.wrapper],
               ),
             )
             ..registerPipelineBehavior(
               () => RequestExceptionActionProcessorBehavior(
-                [showEmptyNameTextFieldErrorAction],
+                [showEmptyNameTextFieldErrorAction.wrapper],
               ),
             );
 

@@ -1,5 +1,6 @@
 export 'request_exception_action.dart';
 export 'request_exception_action_processor_behavior.dart';
+export 'request_exception_action_wrapper.dart';
 export 'request_exception_handler.dart';
 export 'request_exception_handler_state.dart';
 export 'request_exception_handler_wrapper.dart';
