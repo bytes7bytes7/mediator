@@ -23,6 +23,7 @@ void main() {
   setUpAll(() {
     registerFallbackValue(LogInCommand(name: '', password: ''));
     registerFallbackValue(RequestExceptionHandlerState<AuthResult>());
+    registerFallbackValue(EmptyName());
   });
 
   setUp(() {
@@ -53,7 +54,9 @@ void main() {
             ..registerRequestHandler(() => logInHandler)
             ..registerPipelineBehavior(
               () => RequestExceptionProcessorBehavior(
-                [emptyNameExceptionHandler],
+                [
+                  emptyNameExceptionHandler.wrapper,
+                ],
               ),
             );
 
@@ -77,8 +80,8 @@ void main() {
             ..registerPipelineBehavior(
               () => RequestExceptionProcessorBehavior(
                 [
-                  emptyNameExceptionHandler,
-                  anotherEmptyNameExceptionHandler,
+                  emptyNameExceptionHandler.wrapper,
+                  anotherEmptyNameExceptionHandler.wrapper,
                 ],
               ),
             );
@@ -104,12 +107,12 @@ void main() {
             ..registerRequestHandler(() => logInHandler)
             ..registerPipelineBehavior(
               () => RequestExceptionProcessorBehavior(
-                [emptyNameExceptionHandler],
+                [emptyNameExceptionHandler.wrapper],
               ),
             )
             ..registerPipelineBehavior(
               () => RequestExceptionProcessorBehavior(
-                [canNotLogOutExceptionHandler],
+                [canNotLogOutExceptionHandler.wrapper],
               ),
             );
 
@@ -137,8 +140,8 @@ void main() {
             ..registerPipelineBehavior(
               () => RequestExceptionProcessorBehavior(
                 [
-                  emptyNameExceptionHandler,
-                  anotherEmptyNameExceptionHandler,
+                  emptyNameExceptionHandler.wrapper,
+                  anotherEmptyNameExceptionHandler.wrapper,
                 ],
               ),
             );
@@ -168,8 +171,8 @@ void main() {
             ..registerPipelineBehavior(
               () => RequestExceptionProcessorBehavior(
                 [
-                  emptyNameExceptionHandler,
-                  anotherEmptyNameExceptionHandler,
+                  emptyNameExceptionHandler.wrapper,
+                  anotherEmptyNameExceptionHandler.wrapper,
                 ],
               ),
             );

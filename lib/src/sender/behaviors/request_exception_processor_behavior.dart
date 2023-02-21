@@ -1,14 +1,15 @@
 import 'dart:async';
 
 import '../sender.dart';
-import 'request_exception_handler.dart';
 import 'request_exception_handler_state.dart';
+import 'request_exception_handler_wrapper.dart';
 
 class RequestExceptionProcessorBehavior<RS, RQ extends Request<RS>>
     implements PipelineBehavior<RS, RQ> {
-  const RequestExceptionProcessorBehavior(this._handlers);
+  const RequestExceptionProcessorBehavior(this._handlerWrappers);
 
-  final List<RequestExceptionHandler<RS, RQ, Exception>> _handlers;
+  final List<RequestExceptionHandlerWrapper<RS, RQ, Exception>>
+      _handlerWrappers;
 
   @override
   FutureOr<RS> handle(RQ request, RequestHandlerDelegate<RS> next) async {
@@ -17,10 +18,14 @@ class RequestExceptionProcessorBehavior<RS, RQ extends Request<RS>>
     } catch (e) {
       var state = RequestExceptionHandlerState<RS>();
 
-      for (final handler in _handlers) {
-        try {
-          state = await handler.handle(request, e, state);
-        } catch (_) {}
+      for (final wrapper in _handlerWrappers) {
+        final handler = wrapper.wrap(e);
+
+        if (handler != null) {
+          try {
+            state = await handler.handle(request, e as Exception, state);
+          } catch (_) {}
+        }
 
         if (state.isHandled) {
           break;

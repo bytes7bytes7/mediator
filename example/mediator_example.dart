@@ -17,6 +17,20 @@ class AuthResult {
   String toString() => '$AuthResult {isLoggedIn: $isLoggedIn, error: $error}';
 }
 
+class MyException implements Exception {}
+
+class R extends RequestExceptionHandler<AuthResult, LogInCommand, MyException> {
+  @override
+  FutureOr<RequestExceptionHandlerState<AuthResult>> handle(
+    LogInCommand request,
+    Object exception,
+    RequestExceptionHandlerState<AuthResult> state,
+  ) {
+    // TODO: implement handle
+    throw UnimplementedError();
+  }
+}
+
 class LogInCommand extends Request<AuthResult> {
   LogInCommand({
     required this.name,
