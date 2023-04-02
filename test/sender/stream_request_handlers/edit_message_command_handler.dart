@@ -5,4 +5,4 @@ import '../models/message.dart';
 import '../requests/edit_message_command.dart';
 
 class MockEditMessageCommandHandler extends Mock
-    implements StreamRequestHandler<Message, EditMessageCommand> {}
+    implements StreamRequestHandler<EditMessageCommand, Message> {}

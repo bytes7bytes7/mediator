@@ -5,4 +5,4 @@ import '../models/message.dart';
 import '../requests/get_messages_command.dart';
 
 class MockGetMessagesCommandHandler extends Mock
-    implements StreamRequestHandler<Message, GetMessagesCommand> {}
+    implements StreamRequestHandler<GetMessagesCommand, Message> {}

@@ -12,15 +12,15 @@ class _Mediator implements Mediator {
       HashMap<Type, List<StreamPipelineBehaviorCreator>>();
 
   @override
-  void registerRequestHandler<RS, RQ extends Request<RS>>(
-    RequestHandlerCreator<RS, RQ> creator,
+  void registerRequestHandler<RQ extends Request<RS>, RS>(
+    RequestHandlerCreator<RQ, RS> creator,
   ) {
     _requestHandlerCreators[RQ] = creator;
   }
 
   @override
-  void registerStreamRequestHandler<RS, RQ extends StreamRequest<RS>>(
-    StreamRequestHandlerCreator<RS, RQ> creator,
+  void registerStreamRequestHandler<RQ extends StreamRequest<RS>, RS>(
+    StreamRequestHandlerCreator<RQ, RS> creator,
   ) {
     _streamRequestHandlerCreators[RQ] = creator;
   }
@@ -41,8 +41,8 @@ class _Mediator implements Mediator {
   }
 
   @override
-  void registerPipelineBehavior<RS, RQ extends Request<RS>>(
-    PipelineBehaviorCreator<RS, RQ> creator,
+  void registerPipelineBehavior<RQ extends Request<RS>, RS>(
+    PipelineBehaviorCreator<RQ, RS> creator,
   ) {
     final creators = _pipelineBehaviorCreators[RQ];
 
@@ -56,8 +56,8 @@ class _Mediator implements Mediator {
   }
 
   @override
-  void registerStreamPipelineBehavior<RS, RQ extends StreamRequest<RS>>(
-    StreamPipelineBehaviorCreator<RS, RQ> creator,
+  void registerStreamPipelineBehavior<RQ extends StreamRequest<RS>, RS>(
+    StreamPipelineBehaviorCreator<RQ, RS> creator,
   ) {
     final creators = _streamPipelineBehaviorCreators[RQ];
 
@@ -71,7 +71,7 @@ class _Mediator implements Mediator {
   }
 
   @override
-  Future<RS> send<RS, RQ extends Request<RS>>({
+  Future<RS> send<RQ extends Request<RS>, RS>({
     required RQ request,
     required Type requestType,
     required Type responseType,
@@ -96,7 +96,7 @@ class _Mediator implements Mediator {
   }
 
   @override
-  Stream<RS> createStream<RS, RQ extends StreamRequest<RS>>({
+  Stream<RS> createStream<RQ extends StreamRequest<RS>, RS>({
     required RQ request,
     required Type requestType,
     required Type responseType,

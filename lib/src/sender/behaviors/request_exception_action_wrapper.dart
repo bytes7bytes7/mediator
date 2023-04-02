@@ -1,19 +1,19 @@
 import '../sender.dart';
 import 'request_exception_action.dart';
 
-extension RequestExceptionActionWrapperX<RS, RQ extends Request<RS>,
-    E extends Exception> on RequestExceptionAction<RS, RQ, E> {
-  RequestExceptionActionWrapper<RS, RQ, E> get wrapper =>
+extension RequestExceptionActionWrapperX<RQ extends Request<RS>,
+    E extends Exception, RS> on RequestExceptionAction<RQ, E, RS> {
+  RequestExceptionActionWrapper<RQ, E, RS> get wrapper =>
       RequestExceptionActionWrapper(this);
 }
 
-class RequestExceptionActionWrapper<RS, RQ extends Request<RS>,
-    E extends Exception> {
+class RequestExceptionActionWrapper<RQ extends Request<RS>, E extends Exception,
+    RS> {
   const RequestExceptionActionWrapper(this._action);
 
-  final RequestExceptionAction<RS, RQ, E> _action;
+  final RequestExceptionAction<RQ, E, RS> _action;
 
-  RequestExceptionAction<RS, RQ, E>? wrap(Object exception) {
+  RequestExceptionAction<RQ, E, RS>? wrap(Object exception) {
     if (exception is E) {
       return _action;
     }

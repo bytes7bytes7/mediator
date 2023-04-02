@@ -4,11 +4,11 @@ import '../sender.dart';
 import 'request_exception_handler_state.dart';
 import 'request_exception_handler_wrapper.dart';
 
-class RequestExceptionProcessorBehavior<RS, RQ extends Request<RS>>
-    implements PipelineBehavior<RS, RQ> {
+class RequestExceptionProcessorBehavior<RQ extends Request<RS>, RS>
+    implements PipelineBehavior<RQ, RS> {
   const RequestExceptionProcessorBehavior(this._handlerWrappers);
 
-  final List<RequestExceptionHandlerWrapper<RS, RQ, Exception>>
+  final List<RequestExceptionHandlerWrapper<RQ, Exception, RS>>
       _handlerWrappers;
 
   @override

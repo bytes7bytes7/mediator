@@ -11,10 +11,10 @@ void main() {
   late Sender sender;
   late AuthResult authResult;
   late LogInCommand logInCommand;
-  late RequestHandler<AuthResult, LogInCommand> logInHandler;
-  late RequestPostProcessor<AuthResult, LogInCommand> saveTokenPostProcessor;
-  late RequestPostProcessor<AuthResult, LogInCommand> loadUserDataPostProcessor;
-  late RequestPostProcessor<AuthResult, LogOutCommand> removeTokenPostProcessor;
+  late RequestHandler<LogInCommand, AuthResult> logInHandler;
+  late RequestPostProcessor<LogInCommand, AuthResult> saveTokenPostProcessor;
+  late RequestPostProcessor<LogInCommand, AuthResult> loadUserDataPostProcessor;
+  late RequestPostProcessor<LogOutCommand, AuthResult> removeTokenPostProcessor;
 
   setUpAll(() {
     registerFallbackValue(LogInCommand(name: '', password: ''));

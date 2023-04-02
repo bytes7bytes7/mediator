@@ -3,11 +3,11 @@ import 'dart:async';
 import '../sender.dart';
 import 'request_exception_action_wrapper.dart';
 
-class RequestExceptionActionProcessorBehavior<RS, RQ extends Request<RS>>
-    implements PipelineBehavior<RS, RQ> {
+class RequestExceptionActionProcessorBehavior<RQ extends Request<RS>, RS>
+    implements PipelineBehavior<RQ, RS> {
   const RequestExceptionActionProcessorBehavior(this._actionWrappers);
 
-  final List<RequestExceptionActionWrapper<RS, RQ, Exception>> _actionWrappers;
+  final List<RequestExceptionActionWrapper<RQ, Exception, RS>> _actionWrappers;
 
   @override
   FutureOr<RS> handle(RQ request, RequestHandlerDelegate<RS> next) async {

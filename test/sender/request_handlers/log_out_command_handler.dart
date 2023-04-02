@@ -5,4 +5,4 @@ import '../models/auth_result.dart';
 import '../requests/log_out_command.dart';
 
 class MockLogOutCommandHandler extends Mock
-    implements RequestHandler<AuthResult, LogOutCommand> {}
+    implements RequestHandler<LogOutCommand, AuthResult> {}

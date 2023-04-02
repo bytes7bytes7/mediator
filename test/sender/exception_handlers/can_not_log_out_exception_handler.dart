@@ -8,4 +8,4 @@ import '../requests/log_out_command.dart';
 // ignore: missing_override_of_must_be_overridden
 class MockCanNotLogOutExceptionHandler extends Mock
     implements
-        RequestExceptionHandler<AuthResult, LogOutCommand, CanNotLogOut> {}
+        RequestExceptionHandler<LogOutCommand, CanNotLogOut, AuthResult> {}

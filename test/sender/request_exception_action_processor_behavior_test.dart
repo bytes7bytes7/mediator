@@ -11,12 +11,12 @@ import 'requests/requests.dart';
 void main() {
   late Sender sender;
   late LogInCommand logInCommand;
-  late RequestHandler<AuthResult, LogInCommand> logInHandler;
-  late RequestExceptionAction<AuthResult, LogInCommand, EmptyName>
+  late RequestHandler<LogInCommand, AuthResult> logInHandler;
+  late RequestExceptionAction<LogInCommand, EmptyName, AuthResult>
       showEmptyNameAlertAction;
-  late RequestExceptionAction<AuthResult, LogInCommand, EmptyName>
+  late RequestExceptionAction<LogInCommand, EmptyName, AuthResult>
       showEmptyNameTextFieldErrorAction;
-  late RequestExceptionAction<AuthResult, LogOutCommand, CanNotLogOut>
+  late RequestExceptionAction<LogOutCommand, CanNotLogOut, AuthResult>
       showCanNotLogOutAlert;
 
   setUpAll(() {

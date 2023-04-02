@@ -2,8 +2,8 @@ import 'dart:async';
 
 import '../sender.dart';
 
-abstract class RequestExceptionAction<RS, RQ extends Request<RS>,
-    E extends Exception> {
+abstract class RequestExceptionAction<RQ extends Request<RS>,
+    E extends Exception, RS> {
   const RequestExceptionAction();
 
   FutureOr<void> execute(RQ request, E exception);

@@ -19,15 +19,19 @@ class AuthResult {
 
 class MyException implements Exception {}
 
-class R extends RequestExceptionHandler<AuthResult, LogInCommand, MyException> {
+class R extends RequestExceptionHandler<LogInCommand, MyException, AuthResult> {
   @override
   FutureOr<RequestExceptionHandlerState<AuthResult>> handle(
     LogInCommand request,
-    Object exception,
+    MyException exception,
     RequestExceptionHandlerState<AuthResult> state,
   ) {
-    // TODO: implement handle
-    throw UnimplementedError();
+    print('Exception is handled');
+
+    return RequestExceptionHandlerState(
+      isHandled: true,
+      response: AuthResult(false),
+    );
   }
 }
 
@@ -41,7 +45,7 @@ class LogInCommand extends Request<AuthResult> {
   final String password;
 }
 
-class LogInCommandHandler extends RequestHandler<AuthResult, LogInCommand> {
+class LogInCommandHandler extends RequestHandler<LogInCommand, AuthResult> {
   const LogInCommandHandler();
 
   @override
@@ -55,7 +59,7 @@ class LogInCommandHandler extends RequestHandler<AuthResult, LogInCommand> {
 }
 
 class LogInNameValidationBehavior
-    extends PipelineBehavior<AuthResult, LogInCommand> {
+    extends PipelineBehavior<LogInCommand, AuthResult> {
   const LogInNameValidationBehavior();
 
   @override
@@ -75,7 +79,7 @@ class LogInNameValidationBehavior
 }
 
 class LogInPasswordValidationBehavior
-    extends PipelineBehavior<AuthResult, LogInCommand> {
+    extends PipelineBehavior<LogInCommand, AuthResult> {
   const LogInPasswordValidationBehavior();
 
   @override
@@ -94,7 +98,7 @@ class LogInPasswordValidationBehavior
   }
 }
 
-class Connecting extends RequestPreProcessor<AuthResult, LogInCommand> {
+class Connecting extends RequestPreProcessor<LogInCommand, AuthResult> {
   const Connecting();
 
   @override
@@ -103,7 +107,7 @@ class Connecting extends RequestPreProcessor<AuthResult, LogInCommand> {
   }
 }
 
-class PackingData extends RequestPreProcessor<AuthResult, LogInCommand> {
+class PackingData extends RequestPreProcessor<LogInCommand, AuthResult> {
   const PackingData();
 
   @override

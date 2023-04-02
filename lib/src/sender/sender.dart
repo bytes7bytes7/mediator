@@ -12,43 +12,43 @@ part 'stream_request_handler.dart';
 
 part 'stream_pipeline_behavior.dart';
 
-typedef RequestHandlerCreator<RS, RQ extends Request<RS>>
-    = RequestHandler<RS, RQ> Function();
-typedef StreamRequestHandlerCreator<RS, RQ extends StreamRequest<RS>>
-    = StreamRequestHandler<RS, RQ> Function();
-typedef PipelineBehaviorCreator<RS, RQ extends Request<RS>>
-    = PipelineBehavior<RS, RQ> Function();
-typedef StreamPipelineBehaviorCreator<RS, RQ extends StreamRequest<RS>>
-    = StreamPipelineBehavior<RS, RQ> Function();
+typedef RequestHandlerCreator<RQ extends Request<RS>, RS>
+    = RequestHandler<RQ, RS> Function();
+typedef StreamRequestHandlerCreator<RQ extends StreamRequest<RS>, RS>
+    = StreamRequestHandler<RQ, RS> Function();
+typedef PipelineBehaviorCreator<RQ extends Request<RS>, RS>
+    = PipelineBehavior<RQ, RS> Function();
+typedef StreamPipelineBehaviorCreator<RQ extends StreamRequest<RS>, RS>
+    = StreamPipelineBehavior<RQ, RS> Function();
 
 abstract class Sender {
   const Sender();
 
-  void registerRequestHandler<RS, RQ extends Request<RS>>(
-    RequestHandlerCreator<RS, RQ> creator,
+  void registerRequestHandler<RQ extends Request<RS>, RS>(
+    RequestHandlerCreator<RQ, RS> creator,
   );
 
-  void registerStreamRequestHandler<RS, RQ extends StreamRequest<RS>>(
-    StreamRequestHandlerCreator<RS, RQ> creator,
+  void registerStreamRequestHandler<RQ extends StreamRequest<RS>, RS>(
+    StreamRequestHandlerCreator<RQ, RS> creator,
   );
 
-  void registerPipelineBehavior<RS, RQ extends Request<RS>>(
-    PipelineBehaviorCreator<RS, RQ> creator,
+  void registerPipelineBehavior<RQ extends Request<RS>, RS>(
+    PipelineBehaviorCreator<RQ, RS> creator,
   );
 
-  void registerStreamPipelineBehavior<RS, RQ extends StreamRequest<RS>>(
-    StreamPipelineBehaviorCreator<RS, RQ> creator,
+  void registerStreamPipelineBehavior<RQ extends StreamRequest<RS>, RS>(
+    StreamPipelineBehaviorCreator<RQ, RS> creator,
   );
 
   @Deprecated('Use `sendTo` method of `Request` instead')
-  Future<RS> send<RS, RQ extends Request<RS>>({
+  Future<RS> send<RQ extends Request<RS>, RS>({
     required RQ request,
     required Type requestType,
     required Type responseType,
   });
 
   @Deprecated('Use `createStream` method of `StreamRequest` instead')
-  Stream<RS> createStream<RS, RQ extends StreamRequest<RS>>({
+  Stream<RS> createStream<RQ extends StreamRequest<RS>, RS>({
     required RQ request,
     required Type requestType,
     required Type responseType,

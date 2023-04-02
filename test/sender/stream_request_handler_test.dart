@@ -10,8 +10,8 @@ void main() {
   late Sender sender;
   late Message message;
   late GetMessagesCommand getMessagesCommand;
-  late StreamRequestHandler<Message, GetMessagesCommand> getMessagesHandler;
-  late StreamRequestHandler<Message, EditMessageCommand> editMessageHandler;
+  late StreamRequestHandler<GetMessagesCommand, Message> getMessagesHandler;
+  late StreamRequestHandler<EditMessageCommand, Message> editMessageHandler;
 
   setUpAll(() {
     registerFallbackValue(GetMessagesCommand());

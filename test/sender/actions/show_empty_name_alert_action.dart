@@ -7,4 +7,4 @@ import '../requests/log_in_command.dart';
 
 // ignore: missing_override_of_must_be_overridden
 class MockShowEmptyNameAlertAction extends Mock
-    implements RequestExceptionAction<AuthResult, LogInCommand, EmptyName> {}
+    implements RequestExceptionAction<LogInCommand, EmptyName, AuthResult> {}

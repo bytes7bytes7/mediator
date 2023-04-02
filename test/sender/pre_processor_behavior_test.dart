@@ -11,10 +11,10 @@ void main() {
   late Sender sender;
   late AuthResult authResult;
   late LogInCommand logInCommand;
-  late RequestHandler<AuthResult, LogInCommand> logInHandler;
-  late RequestPreProcessor<AuthResult, LogInCommand> loadingPreProcessor;
-  late RequestPreProcessor<AuthResult, LogInCommand> packingDataPreProcessor;
-  late RequestPreProcessor<AuthResult, LogOutCommand>
+  late RequestHandler<LogInCommand, AuthResult> logInHandler;
+  late RequestPreProcessor<LogInCommand, AuthResult> loadingPreProcessor;
+  late RequestPreProcessor<LogInCommand, AuthResult> packingDataPreProcessor;
+  late RequestPreProcessor<LogOutCommand, AuthResult>
       checkConnectionPreProcessor;
 
   setUpAll(() {

@@ -7,4 +7,4 @@ import '../requests/log_in_command.dart';
 
 // ignore: missing_override_of_must_be_overridden
 class MockEmptyNameExceptionHandler extends Mock
-    implements RequestExceptionHandler<AuthResult, LogInCommand, EmptyName> {}
+    implements RequestExceptionHandler<LogInCommand, EmptyName, AuthResult> {}

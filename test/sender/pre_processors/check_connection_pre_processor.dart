@@ -5,4 +5,4 @@ import '../models/auth_result.dart';
 import '../requests/log_out_command.dart';
 
 class MockCheckConnectionPreProcessor extends Mock
-    implements RequestPreProcessor<AuthResult, LogOutCommand> {}
+    implements RequestPreProcessor<LogOutCommand, AuthResult> {}

@@ -3,8 +3,8 @@ import 'dart:async';
 import '../sender.dart';
 import 'request_exception_handler_state.dart';
 
-abstract class RequestExceptionHandler<RS, RQ extends Request<RS>,
-    E extends Exception> {
+abstract class RequestExceptionHandler<RQ extends Request<RS>,
+    E extends Exception, RS> {
   const RequestExceptionHandler();
 
   FutureOr<RequestExceptionHandlerState<RS>> handle(

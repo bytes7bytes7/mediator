@@ -5,4 +5,4 @@ import '../models/auth_result.dart';
 import '../requests/log_out_command.dart';
 
 class MockRemoveTokenPostProcessor extends Mock
-    implements RequestPostProcessor<AuthResult, LogOutCommand> {}
+    implements RequestPostProcessor<LogOutCommand, AuthResult> {}

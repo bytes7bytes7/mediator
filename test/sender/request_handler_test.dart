@@ -10,8 +10,8 @@ void main() {
   late Sender sender;
   late AuthResult authResult;
   late LogInCommand logInCommand;
-  late RequestHandler<AuthResult, LogInCommand> logInHandler;
-  late RequestHandler<AuthResult, LogOutCommand> logOutHandler;
+  late RequestHandler<LogInCommand, AuthResult> logInHandler;
+  late RequestHandler<LogOutCommand, AuthResult> logOutHandler;
 
   setUpAll(() {
     registerFallbackValue(LogInCommand(name: '', password: ''));
