@@ -7,6 +7,6 @@ abstract class StreamPipelineBehavior<RQ extends StreamRequest<RS>, RS> {
 
   Stream<RS> handle(
     RQ request,
-    StreamHandlerDelegate next,
+    StreamHandlerDelegate<RS> next,
   );
 }
