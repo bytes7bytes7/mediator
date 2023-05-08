@@ -117,8 +117,8 @@ class _Mediator implements Mediator {
 
     return behaviors.fold<StreamHandlerDelegate<RS>>(
       () => handler.handle(request) as FutureOr<Stream<RS>>,
-      (prev, curr) => () => curr().handle(request, () => _nextWrapper(prev()))
-          as FutureOr<Stream<RS>>,
+      (prev, curr) => () => (curr() as StreamPipelineBehavior<RQ, RS>)
+          .handle(request, () => _nextWrapper(prev())),
     )();
   }
 
