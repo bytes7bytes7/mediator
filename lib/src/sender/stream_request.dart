@@ -7,7 +7,7 @@ abstract class StreamRequest<RS> {
   final Type _requestType;
   final Type _responseType;
 
-  Stream<RS> createStream(Sender sender) {
+  Future<Stream<RS>> createStream(Sender sender) {
     // ignore: deprecated_member_use_from_same_package
     return sender.createStream(
       request: this,

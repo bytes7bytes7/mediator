@@ -48,7 +48,7 @@ abstract class Sender {
   });
 
   @Deprecated('Use `createStream` method of `StreamRequest` instead')
-  Stream<RS> createStream<RQ extends StreamRequest<RS>, RS>({
+  Future<Stream<RS>> createStream<RQ extends StreamRequest<RS>, RS>({
     required RQ request,
     required Type requestType,
     required Type responseType,

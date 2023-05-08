@@ -96,11 +96,11 @@ class _Mediator implements Mediator {
   }
 
   @override
-  Stream<RS> createStream<RQ extends StreamRequest<RS>, RS>({
+  Future<Stream<RS>> createStream<RQ extends StreamRequest<RS>, RS>({
     required RQ request,
     required Type requestType,
     required Type responseType,
-  }) {
+  }) async {
     final handlerCreator = _streamRequestHandlerCreators[requestType];
 
     if (handlerCreator == null) {
@@ -116,9 +116,9 @@ class _Mediator implements Mediator {
         _streamPipelineBehaviorCreators[requestType]?.reversed ?? [];
 
     return behaviors.fold<StreamHandlerDelegate<RS>>(
-      () => handler.handle(request) as Stream<RS>,
-      (prev, curr) => () =>
-          curr().handle(request, () => _nextWrapper(prev())) as Stream<RS>,
+      () => handler.handle(request) as FutureOr<Stream<RS>>,
+      (prev, curr) => () => curr().handle(request, () => _nextWrapper(prev()))
+          as FutureOr<Stream<RS>>,
     )();
   }
 
@@ -140,9 +140,9 @@ class _Mediator implements Mediator {
     return Future.value(null);
   }
 
-  Stream<T> _nextWrapper<T>(Stream<T> items) async* {
-    await for (final item in items) {
-      yield item;
-    }
+  FutureOr<Stream<T>> _nextWrapper<T>(FutureOr<Stream<T>> items) async {
+    final stream = await items;
+
+    return stream;
   }
 }

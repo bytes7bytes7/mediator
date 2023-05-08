@@ -56,14 +56,14 @@ void main() {
         'does not throw when a proper $StreamRequestHandler is registered',
         () async {
           when(() => getMessagesHandler.handle(any()))
-              .thenAnswer((_) => Stream.value(message));
+              .thenAnswer((_) => Future.value(Stream.value(message)));
 
           sender.registerStreamRequestHandler(
             () => getMessagesHandler,
           );
 
           await expectLater(
-            getMessagesCommand.createStream(sender).first,
+            (await getMessagesCommand.createStream(sender)).first,
             completion(message),
           );
         },
@@ -74,7 +74,7 @@ void main() {
         '${StreamRequestHandler}s are registered',
         () async {
           when(() => getMessagesHandler.handle(any()))
-              .thenAnswer((_) => Stream.value(message));
+              .thenAnswer((_) => Future.value(Stream.value(message)));
 
           sender
             ..registerStreamRequestHandler(
@@ -85,7 +85,7 @@ void main() {
             );
 
           await expectLater(
-            getMessagesCommand.createStream(sender).first,
+            (await getMessagesCommand.createStream(sender)).first,
             completion(message),
           );
         },
@@ -96,7 +96,7 @@ void main() {
         '${StreamRequestHandler}s are registered',
         () async {
           when(() => getMessagesHandler.handle(any()))
-              .thenAnswer((_) => Stream.value(message));
+              .thenAnswer((_) => Future.value(Stream.value(message)));
 
           sender
             ..registerStreamRequestHandler(
@@ -107,7 +107,7 @@ void main() {
             );
 
           await expectLater(
-            getMessagesCommand.createStream(sender).first,
+            (await getMessagesCommand.createStream(sender)).first,
             completion(message),
           );
         },
